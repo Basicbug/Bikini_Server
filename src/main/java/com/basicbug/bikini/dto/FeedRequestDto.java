@@ -1,18 +1,18 @@
 package com.basicbug.bikini.dto;
 
 import com.basicbug.bikini.entity.Feed;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.AllArgsConstructor;
 
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class FeedResponseDto {
+@NoArgsConstructor
+public class FeedRequestDto {
     private Integer feedNumOfUser;
     private String userId;
     private String content;
@@ -29,5 +29,12 @@ public class FeedResponseDto {
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .build();
+    }
+
+    @Override
+    public String toString() {
+        return "FeedRequestDto(feedNumOfUser=" + feedNumOfUser + ", userId=" + userId + ", content="
+            + content + ", imageUrl=" + imageUrl + ", profileImageUrl=" + profileImageUrl
+            + ", countOfGroupFeed=" + countOfGroupFeed + ")";
     }
 }
