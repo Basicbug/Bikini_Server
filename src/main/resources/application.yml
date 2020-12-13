@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:bikini
+    driver-class-name: org.h2.Driver
+    username: jaewon
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true

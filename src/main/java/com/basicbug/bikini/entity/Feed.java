@@ -1,21 +1,46 @@
 package com.basicbug.bikini.entity;
 
+import com.basicbug.bikini.dto.FeedRequestDto;
 import com.basicbug.bikini.dto.FeedResponseDto;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Entity
+@Builder
+@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class Feed {
-    private Integer feedNumOfUser;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    private int feedNumOfUser;
+    private int countOfGroupFeed;
     private String userId;
     private String content;
     private String imageUrl;
     private String profileImageUrl;
-    private Integer countOfGroupFeed;
 
-    public FeedResponseDto toDto() {
+    public FeedResponseDto toResponseDto() {
         return FeedResponseDto.builder()
+            .feedNumOfUser(feedNumOfUser)
+            .userId(userId)
+            .content(content)
+            .imageUrl(imageUrl)
+            .profileImageUrl(profileImageUrl)
+            .countOfGroupFeed(countOfGroupFeed)
+            .build();
+    }
+
+    public FeedRequestDto toRequestDto() {
+        return FeedRequestDto.builder()
             .feedNumOfUser(feedNumOfUser)
             .userId(userId)
             .content(content)
