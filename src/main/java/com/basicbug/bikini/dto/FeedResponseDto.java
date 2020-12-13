@@ -1,4 +1,4 @@
-package com.basicbug.bikini.entity;
+package com.basicbug.bikini.dto;
 
 import lombok.Builder;
 import lombok.Getter;
