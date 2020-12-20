@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Feed {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

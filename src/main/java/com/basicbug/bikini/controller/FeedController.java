@@ -32,7 +32,8 @@ public class FeedController {
 
     @GetMapping("/dummy")
     public CommonResponse<FeedResponseDto> getDummyFeedList() {
-        FeedResponseDto feedResponseDto = new FeedResponseDto(1, "userId", "content", "imageUrl", "profileImageUrl", 3);
+        FeedResponseDto feedResponseDto = new FeedResponseDto(1, "userId", "content", "imageUrl",
+            "profileImageUrl", 3);
         CommonResponse<FeedResponseDto> response = new CommonResponse<>();
         response.setStatus(HttpStatus.OK);
         response.setResult(feedResponseDto);

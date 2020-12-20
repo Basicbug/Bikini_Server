@@ -25,7 +25,8 @@ public class SwaggerConfiguration {
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title("BasicBug API Documentation")
+        return new ApiInfoBuilder()
+            .title("BasicBug API Documentation")
             .description("BasicBug Bikini API Docs")
             .license("BasicBug")
             .version("1")
