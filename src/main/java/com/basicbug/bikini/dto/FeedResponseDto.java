@@ -1,6 +1,7 @@
 package com.basicbug.bikini.dto;
 
 import com.basicbug.bikini.entity.Feed;
+import com.basicbug.bikini.model.LatLng;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class FeedResponseDto {
     private String imageUrl;
     private String profileImageUrl;
     private Integer countOfGroupFeed;
+    private LatLng position;
 
     public Feed toEntity() {
         return Feed.builder()
@@ -29,6 +31,7 @@ public class FeedResponseDto {
             .imageUrl(imageUrl)
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
+            .position(position)
             .build();
     }
 }

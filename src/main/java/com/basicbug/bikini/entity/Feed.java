@@ -2,6 +2,8 @@ package com.basicbug.bikini.entity;
 
 import com.basicbug.bikini.dto.FeedRequestDto;
 import com.basicbug.bikini.dto.FeedResponseDto;
+import com.basicbug.bikini.model.LatLng;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,6 +31,9 @@ public class Feed {
     private String imageUrl;
     private String profileImageUrl;
 
+    @Embedded
+    private LatLng position;
+
     public FeedResponseDto toResponseDto() {
         return FeedResponseDto.builder()
             .feedNumOfUser(feedNumOfUser)
@@ -37,6 +42,7 @@ public class Feed {
             .imageUrl(imageUrl)
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
+            .position(position)
             .build();
     }
 
@@ -48,6 +54,7 @@ public class Feed {
             .imageUrl(imageUrl)
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
+            .position(position)
             .build();
     }
 }
