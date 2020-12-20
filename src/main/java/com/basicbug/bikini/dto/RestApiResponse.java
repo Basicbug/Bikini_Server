@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public class RestApiResponse {
+
     private final String apiStatusCode;
     private final String responseMessage;
 }

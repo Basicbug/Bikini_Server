@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 public class CommonResponse<T> {
+
     private T result;
     private HttpStatus status;
 }

@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: ${DB_HOST_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    sql-script-encoding: UTF-8
+    initialization-mode: always
