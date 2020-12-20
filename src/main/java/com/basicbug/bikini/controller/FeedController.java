@@ -5,6 +5,7 @@ import com.basicbug.bikini.dto.CommonResponse;
 import com.basicbug.bikini.dto.FeedRequestDto;
 import com.basicbug.bikini.dto.FeedResponseDto;
 import com.basicbug.bikini.entity.Feed;
+import com.basicbug.bikini.model.LatLng;
 import com.basicbug.bikini.repository.FeedRepository;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -33,7 +34,7 @@ public class FeedController {
     @GetMapping("/dummy")
     public CommonResponse<FeedResponseDto> getDummyFeedList() {
         FeedResponseDto feedResponseDto = new FeedResponseDto(1, "userId", "content", "imageUrl",
-            "profileImageUrl", 3);
+            "profileImageUrl", 3, new LatLng(30.0, 40.0));
         CommonResponse<FeedResponseDto> response = new CommonResponse<>();
         response.setStatus(HttpStatus.OK);
         response.setResult(feedResponseDto);
