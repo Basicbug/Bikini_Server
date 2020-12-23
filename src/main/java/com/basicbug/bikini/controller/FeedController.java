@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -32,54 +33,47 @@ public class FeedController {
     private final FeedRepository feedRepository;
 
     @GetMapping("/dummy")
+    @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedResponseDto> getDummyFeedList() {
         FeedResponseDto feedResponseDto = new FeedResponseDto(1, "userId", "content", "imageUrl",
             "profileImageUrl", 3, new LatLng(30.0, 40.0));
-        CommonResponse<FeedResponseDto> response = new CommonResponse<>();
-        response.setStatus(HttpStatus.OK);
-        response.setResult(feedResponseDto);
-        return response;
+        return CommonResponse.of(feedResponseDto);
     }
 
     @ApiOperation(value = "Add feed", notes = "Feed 정보 추가")
     @PostMapping("/add")
+    @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<Void> addFeed(@RequestBody FeedRequestDto feedRequestDto) {
         logger.debug("addFeed() {}", feedRequestDto);
         Feed feed = feedRequestDto.toEntity();
-
         feedRepository.save(feed);
-        logger.error("add feed {}", feed.getId());
 
-        CommonResponse<Void> response = new CommonResponse<>();
-        response.setStatus(HttpStatus.OK);
-
-        return response;
+        return CommonResponse.empty();
     }
 
     @ApiOperation(value = "Clear feed list", notes = "Feed 리스트 정보 초기화")
     @GetMapping("/clear")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public CommonResponse<Void> clearFeedList() {
         logger.debug("clearFeedList()");
         feedRepository.deleteAll();
 
-        CommonResponse<Void> response = new CommonResponse<>();
-        response.setStatus(HttpStatus.OK);
-        return response;
+        return CommonResponse.empty();
     }
 
     @ApiOperation(value = "Get all feed list", notes = "전체 Feed 리스트")
     @GetMapping("/list")
+    @ResponseStatus(HttpStatus.OK)
     public CommonResponse<List<FeedResponseDto>> getFeedList() {
         logger.debug("list()");
         List<FeedResponseDto> feedList = feedRepository.findAll().stream().map(Feed::toResponseDto).collect(Collectors.toList());
-        CommonResponse<List<FeedResponseDto>> response = new CommonResponse<>();
-        response.setResult(feedList);
-        response.setStatus(HttpStatus.OK);
-        return response;
+
+        return CommonResponse.of(feedList);
     }
 
     @ApiOperation(value = "Get all feed list of userId", notes = "특정 유저의 Feed list")
     @GetMapping("/list/{userId}")
+    @ResponseStatus(HttpStatus.OK)
     public CommonResponse<List<FeedResponseDto>> getFeedListOfUser(@RequestParam String userId) {
         logger.debug("get feed list of {}", userId);
         List<FeedResponseDto> feedList = feedRepository.findAll().stream()
@@ -87,9 +81,6 @@ public class FeedController {
             .map(Feed::toResponseDto)
             .collect(Collectors.toList());
 
-        CommonResponse<List<FeedResponseDto>> response = new CommonResponse<>();
-        response.setResult(feedList);
-        response.setStatus(HttpStatus.OK);
-        return response;
+        return CommonResponse.of(feedList);
     }
 }
