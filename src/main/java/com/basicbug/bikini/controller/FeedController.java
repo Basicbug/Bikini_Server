@@ -3,23 +3,19 @@ package com.basicbug.bikini.controller;
 
 import com.basicbug.bikini.dto.CommonResponse;
 import com.basicbug.bikini.dto.FeedRequestDto;
-import com.basicbug.bikini.dto.FeedResponseDto;
-import com.basicbug.bikini.entity.Feed;
-import com.basicbug.bikini.model.LatLng;
-import com.basicbug.bikini.repository.FeedRepository;
+import com.basicbug.bikini.dto.FeedResponse;
+import com.basicbug.bikini.model.Feed;
+import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,25 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/feed")
 public class FeedController {
 
-    private final Logger logger = LoggerFactory.getLogger(FeedController.class);
-    private final FeedRepository feedRepository;
-
-    @GetMapping("/dummy")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<FeedResponseDto> getDummyFeedList() {
-        FeedResponseDto feedResponseDto = new FeedResponseDto(1, "userId", "content", "imageUrl",
-            "profileImageUrl", 3, new LatLng(30.0, 40.0));
-        return CommonResponse.of(feedResponseDto);
-    }
+    private final FeedService feedService;
 
     @ApiOperation(value = "Add feed", notes = "Feed 정보 추가")
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<Void> addFeed(@RequestBody FeedRequestDto feedRequestDto) {
-        logger.debug("addFeed() {}", feedRequestDto);
+        //TODO model <-> dto 변환은 어디서 수행하는 것이 좋을까?
         Feed feed = feedRequestDto.toEntity();
-        feedRepository.save(feed);
-
+        feedService.createFeed(feed);
         return CommonResponse.empty();
     }
 
@@ -55,32 +41,23 @@ public class FeedController {
     @GetMapping("/clear")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public CommonResponse<Void> clearFeedList() {
-        logger.debug("clearFeedList()");
-        feedRepository.deleteAll();
-
+        feedService.clearFeedList();
         return CommonResponse.empty();
     }
 
     @ApiOperation(value = "Get all feed list", notes = "전체 Feed 리스트")
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<List<FeedResponseDto>> getFeedList() {
-        logger.debug("list()");
-        List<FeedResponseDto> feedList = feedRepository.findAll().stream().map(Feed::toResponseDto).collect(Collectors.toList());
-
-        return CommonResponse.of(feedList);
+    public CommonResponse<List<FeedResponse>> getFeedList() {
+        List<FeedResponse> feedResponses = feedService.getAllFeedResponseList();
+        return CommonResponse.of(feedResponses);
     }
 
     @ApiOperation(value = "Get all feed list of userId", notes = "특정 유저의 Feed list")
     @GetMapping("/list/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<List<FeedResponseDto>> getFeedListOfUser(@RequestParam String userId) {
-        logger.debug("get feed list of {}", userId);
-        List<FeedResponseDto> feedList = feedRepository.findAll().stream()
-            .filter(it -> it.getUserId().equals(userId))
-            .map(Feed::toResponseDto)
-            .collect(Collectors.toList());
-
-        return CommonResponse.of(feedList);
+    public CommonResponse<List<FeedResponse>> getFeedListOfUser(@PathVariable String userId) {
+        List<FeedResponse> feedResponses = feedService.getFeedListOf(userId);
+        return CommonResponse.of(feedResponses);
     }
 }
