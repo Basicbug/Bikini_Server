@@ -2,11 +2,12 @@ package com.basicbug.bikini.dto;
 
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.Point;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.AllArgsConstructor;
 
 @Getter
 @Setter
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class FeedResponse {
 
+    private UUID feedId;
     private Integer feedNumOfUser;
     private String userId;
     private String content;
