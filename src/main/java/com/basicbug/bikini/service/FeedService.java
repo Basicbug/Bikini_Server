@@ -1,0 +1,57 @@
+package com.basicbug.bikini.service;
+
+import com.basicbug.bikini.dto.FeedResponse;
+import com.basicbug.bikini.model.Feed;
+import com.basicbug.bikini.repository.FeedRepository;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class FeedService {
+
+    private final FeedRepository feedRepository;
+
+    /**
+     * DB에 존재하는 모든 피드 목록을 반환한다.
+     * @return 전체 피드 목록
+     */
+    public List<FeedResponse> getAllFeedResponseList() {
+        return feedRepository.findAll()
+            .stream()
+            .map(Feed::toResponseDto)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * userId 를 가진 사용자가 작성한 모든 피드 목록을 반환한다.
+     * @param userId 사용자 ID
+     * @return 사용자의 피드 목록
+     */
+    public List<FeedResponse> getFeedListOf(String userId) {
+        // TODO:  Filter 를 쿼리 단에서 하는 게 좋은가 아니면 데이터를 꺼낸 뒤 수행하는 것이 좋은가?
+        return feedRepository.findAll()
+            .stream()
+            .filter(it -> it.getUserId().equals(userId))
+            .map(Feed::toResponseDto)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 전달받은 피드를 DB에 저장한다.
+     * @param feed 등록할 피드
+     */
+    public void createFeed(Feed feed) {
+        //TODO: Feed 생성 성공/실패 여부 처리 필요
+        feedRepository.save(feed);
+    }
+
+    /**
+     * 현재 DB에 존재하는 모든 피드 목록을 삭제한다.
+     */
+    public void clearFeedList() {
+        feedRepository.deleteAll();
+    }
+}
