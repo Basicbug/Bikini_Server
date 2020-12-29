@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -29,8 +28,7 @@ public class Feed {
 
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
-    @ColumnDefault("random_uuid()")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "VARCHAR(36)")
     private UUID uuid = UUID.randomUUID();
 
     private int feedNumOfUser;
