@@ -2,12 +2,11 @@ package com.basicbug.bikini.controller;
 
 
 import com.basicbug.bikini.dto.CommonResponse;
+import com.basicbug.bikini.dto.FeedListResponse;
 import com.basicbug.bikini.dto.FeedRequestDto;
-import com.basicbug.bikini.dto.FeedResponse;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiOperation;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -48,16 +47,16 @@ public class FeedController {
     @ApiOperation(value = "Get all feed list", notes = "전체 Feed 리스트")
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<List<FeedResponse>> getFeedList() {
-        List<FeedResponse> feedResponses = feedService.getAllFeedResponseList();
-        return CommonResponse.of(feedResponses);
+    public CommonResponse<FeedListResponse> getFeedList() {
+        FeedListResponse feedListResponse = feedService.getAllFeedResponseList();
+        return CommonResponse.of(feedListResponse);
     }
 
     @ApiOperation(value = "Get all feed list of userId", notes = "특정 유저의 Feed list")
     @GetMapping("/list/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<List<FeedResponse>> getFeedListOfUser(@PathVariable String userId) {
-        List<FeedResponse> feedResponses = feedService.getFeedListOf(userId);
-        return CommonResponse.of(feedResponses);
+    public CommonResponse<FeedListResponse> getFeedListOfUser(@PathVariable String userId) {
+        FeedListResponse feedListResponse = feedService.getFeedListOf(userId);
+        return CommonResponse.of(feedListResponse);
     }
 }

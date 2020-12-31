@@ -1,5 +1,6 @@
 package com.basicbug.bikini.service;
 
+import com.basicbug.bikini.dto.FeedListResponse;
 import com.basicbug.bikini.dto.FeedResponse;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.repository.FeedRepository;
@@ -16,31 +17,34 @@ public class FeedService {
 
     /**
      * DB에 존재하는 모든 피드 목록을 반환한다.
+     *
      * @return 전체 피드 목록
      */
-    public List<FeedResponse> getAllFeedResponseList() {
-        return feedRepository.findAll()
+    public FeedListResponse getAllFeedResponseList() {
+        return new FeedListResponse(feedRepository.findAll()
             .stream()
             .map(Feed::toResponseDto)
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
     }
 
     /**
      * userId 를 가진 사용자가 작성한 모든 피드 목록을 반환한다.
+     *
      * @param userId 사용자 ID
      * @return 사용자의 피드 목록
      */
-    public List<FeedResponse> getFeedListOf(String userId) {
+    public FeedListResponse getFeedListOf(String userId) {
         // TODO:  Filter 를 쿼리 단에서 하는 게 좋은가 아니면 데이터를 꺼낸 뒤 수행하는 것이 좋은가?
-        return feedRepository.findAll()
+        return new FeedListResponse(feedRepository.findAll()
             .stream()
             .filter(it -> it.getUserId().equals(userId))
             .map(Feed::toResponseDto)
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
     }
 
     /**
      * 전달받은 피드를 DB에 저장한다.
+     *
      * @param feed 등록할 피드
      */
     public void createFeed(Feed feed) {
