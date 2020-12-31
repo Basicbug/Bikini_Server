@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:bikini
+    url: jdbc:h2:mem:bikini;MODE=MYSQL
     driver-class-name: org.h2.Driver
     username: jaewon
   jpa:
