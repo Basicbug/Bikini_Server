@@ -33,6 +33,7 @@ public class Feed {
 
     private int feedNumOfUser;
     private int countOfGroupFeed;
+    private long numOfLikes;
     private String userId;
     private String content;
     private String imageUrl;
@@ -50,6 +51,7 @@ public class Feed {
             .imageUrl(imageUrl)
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
+            .numOfLikes(numOfLikes)
             .position(position)
             .build();
     }
