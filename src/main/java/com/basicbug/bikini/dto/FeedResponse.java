@@ -23,6 +23,7 @@ public class FeedResponse {
     private String imageUrl;
     private String profileImageUrl;
     private Integer countOfGroupFeed;
+    private Long numOfLikes;
     private Point position;
 
     public Feed toEntity() {

@@ -52,6 +52,14 @@ public class FeedController {
         return CommonResponse.of(feedListResponse);
     }
 
+    @ApiOperation(value = "Get top most likes feed list", notes = "좋아요 수 상위 limit 개의 피드 리스트")
+    @GetMapping("/list/top/{limit}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<FeedListResponse> getTopFeedList(@PathVariable int limit) {
+        FeedListResponse feedListResponse = feedService.getMostLikesFeedList(limit);
+        return CommonResponse.of(feedListResponse);
+    }
+
     @ApiOperation(value = "Get all feed list of userId", notes = "특정 유저의 Feed list")
     @GetMapping("/list/{userId}")
     @ResponseStatus(HttpStatus.OK)
