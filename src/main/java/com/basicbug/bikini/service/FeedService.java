@@ -1,8 +1,10 @@
 package com.basicbug.bikini.service;
 
+import com.basicbug.bikini.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.FeedListResponse;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.repository.FeedRepository;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -64,6 +66,17 @@ public class FeedService {
     public void createFeed(Feed feed) {
         //TODO: Feed 생성 성공/실패 여부 처리 필요
         feedRepository.save(feed);
+    }
+
+    /**
+     * Remove Feed associated with feedId inside of feedDeleteRequestDto
+     * @param feedDeleteRequestDto
+     * @return True if delete success otherwise False
+     */
+    public boolean deleteFeed(FeedDeleteRequestDto feedDeleteRequestDto) {
+        // TODO: Need to validate feedId
+        long result = feedRepository.deleteByFeedId(UUID.fromString(feedDeleteRequestDto.getFeedId()));
+        return result != 0;
     }
 
     /**

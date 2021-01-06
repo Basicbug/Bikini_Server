@@ -1,6 +1,6 @@
 package com.basicbug.bikini.model;
 
-import com.basicbug.bikini.dto.FeedRequestDto;
+import com.basicbug.bikini.dto.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.FeedResponse;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Builder
@@ -29,7 +30,8 @@ public class Feed {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
     @Column(columnDefinition = "VARCHAR(36)")
-    private UUID uuid = UUID.randomUUID();
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    private UUID feedId = UUID.randomUUID();
 
     private int feedNumOfUser;
     private int countOfGroupFeed;
@@ -44,7 +46,7 @@ public class Feed {
 
     public FeedResponse toResponseDto() {
         return FeedResponse.builder()
-            .feedId(uuid)
+            .feedId(feedId)
             .feedNumOfUser(feedNumOfUser)
             .userId(userId)
             .content(content)
@@ -56,8 +58,8 @@ public class Feed {
             .build();
     }
 
-    public FeedRequestDto toRequestDto() {
-        return FeedRequestDto.builder()
+    public FeedCreateRequestDto toRequestDto() {
+        return FeedCreateRequestDto.builder()
             .feedNumOfUser(feedNumOfUser)
             .userId(userId)
             .content(content)

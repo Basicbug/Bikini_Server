@@ -13,7 +13,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FeedRequestDto {
+public class FeedCreateRequestDto {
 
     private Integer feedNumOfUser;
     private String userId;
