@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
+    Feed findByFeedId(UUID feedId);
+
     @Modifying
     @Transactional
     long deleteByFeedId(UUID feedId);

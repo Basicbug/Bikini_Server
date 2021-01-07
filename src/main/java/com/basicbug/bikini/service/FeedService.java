@@ -2,6 +2,7 @@ package com.basicbug.bikini.service;
 
 import com.basicbug.bikini.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.FeedListResponse;
+import com.basicbug.bikini.dto.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.repository.FeedRepository;
 import java.util.UUID;
@@ -66,6 +67,18 @@ public class FeedService {
     public void createFeed(Feed feed) {
         //TODO: Feed 생성 성공/실패 여부 처리 필요
         feedRepository.save(feed);
+    }
+
+    /**
+     * Update Feed information
+     * @param feedUpdateRequestDto
+     */
+    public void updateFeed(FeedUpdateRequestDto feedUpdateRequestDto) {
+        Feed newFeed = feedUpdateRequestDto.toEntity();
+        Feed oldFeed = feedRepository.findByFeedId(newFeed.getFeedId());
+        oldFeed.update(newFeed);
+
+        feedRepository.save(oldFeed);
     }
 
     /**

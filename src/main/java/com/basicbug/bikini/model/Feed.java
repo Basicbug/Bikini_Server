@@ -44,6 +44,16 @@ public class Feed {
     @Embedded
     private Point position;
 
+    public void update(Feed newFeed) {
+        this.feedNumOfUser = newFeed.feedNumOfUser;
+        this.countOfGroupFeed = newFeed.countOfGroupFeed;
+        this.numOfLikes = newFeed.numOfLikes;
+        this.userId = newFeed.userId;
+        this.content = newFeed.content;
+        this.imageUrl = newFeed.imageUrl;
+        this.profileImageUrl = newFeed.profileImageUrl;
+    }
+
     public FeedResponse toResponseDto() {
         return FeedResponse.builder()
             .feedId(feedId)
