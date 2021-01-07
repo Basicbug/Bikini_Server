@@ -3,11 +3,15 @@ package com.basicbug.bikini.dto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.Point;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class FeedUpdateRequestDto {
 
     private String feedId;
