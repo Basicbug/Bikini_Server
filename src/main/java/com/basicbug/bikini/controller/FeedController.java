@@ -2,17 +2,20 @@ package com.basicbug.bikini.controller;
 
 
 import com.basicbug.bikini.dto.CommonResponse;
+import com.basicbug.bikini.dto.FeedCreateRequestDto;
+import com.basicbug.bikini.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.FeedListResponse;
-import com.basicbug.bikini.dto.FeedRequestDto;
-import com.basicbug.bikini.model.Feed;
+import com.basicbug.bikini.dto.FeedUpdateRequestDto;
 import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,10 +32,24 @@ public class FeedController {
     @ApiOperation(value = "Add feed", notes = "Feed 정보 추가")
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<Void> addFeed(@RequestBody FeedRequestDto feedRequestDto) {
-        //TODO model <-> dto 변환은 어디서 수행하는 것이 좋을까?
-        Feed feed = feedRequestDto.toEntity();
-        feedService.createFeed(feed);
+    public CommonResponse<Void> addFeed(@RequestBody FeedCreateRequestDto feedCreateRequestDto) {
+        feedService.createFeed(feedCreateRequestDto);
+        return CommonResponse.empty();
+    }
+
+    @ApiOperation(value = "Delete Feed", notes = "Feed 정보 삭제")
+    @DeleteMapping("/delete")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public CommonResponse<Void> deleteFeed(@RequestBody FeedDeleteRequestDto feedDeleteRequestDto) {
+        boolean result = feedService.deleteFeed(feedDeleteRequestDto);
+        return CommonResponse.empty();
+    }
+
+    @ApiOperation(value = "Update feed", notes = "Feed 정보 갱신")
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<Void> updateFeed(@RequestBody FeedUpdateRequestDto feedUpdateRequestDto) {
+        feedService.updateFeed(feedUpdateRequestDto);
         return CommonResponse.empty();
     }
 

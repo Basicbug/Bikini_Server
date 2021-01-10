@@ -1,8 +1,12 @@
 package com.basicbug.bikini.service;
 
+import com.basicbug.bikini.dto.FeedCreateRequestDto;
+import com.basicbug.bikini.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.FeedListResponse;
+import com.basicbug.bikini.dto.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.repository.FeedRepository;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -57,13 +61,37 @@ public class FeedService {
     }
 
     /**
-     * 전달받은 피드를 DB에 저장한다.
+     * Save Feed information to database
      *
-     * @param feed 등록할 피드
+     * @param feedCreateRequestDto FeedDto that has feed information to be saved
      */
-    public void createFeed(Feed feed) {
-        //TODO: Feed 생성 성공/실패 여부 처리 필요
+    public void createFeed(FeedCreateRequestDto feedCreateRequestDto) {
+        //TODO: Need to handle result of save process
+        Feed feed = feedCreateRequestDto.toEntity();
         feedRepository.save(feed);
+    }
+
+    /**
+     * Update Feed information
+     * @param feedUpdateRequestDto
+     */
+    public void updateFeed(FeedUpdateRequestDto feedUpdateRequestDto) {
+        Feed newFeed = feedUpdateRequestDto.toEntity();
+        Feed oldFeed = feedRepository.findByFeedId(newFeed.getFeedId());
+        oldFeed.update(newFeed);
+
+        feedRepository.save(oldFeed);
+    }
+
+    /**
+     * Remove Feed associated with feedId inside of feedDeleteRequestDto
+     * @param feedDeleteRequestDto
+     * @return True if delete success otherwise False
+     */
+    public boolean deleteFeed(FeedDeleteRequestDto feedDeleteRequestDto) {
+        // TODO: Need to validate feedId
+        long result = feedRepository.deleteByFeedId(UUID.fromString(feedDeleteRequestDto.getFeedId()));
+        return result != 0;
     }
 
     /**
