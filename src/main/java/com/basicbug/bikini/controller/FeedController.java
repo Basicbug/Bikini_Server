@@ -6,7 +6,6 @@ import com.basicbug.bikini.dto.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.FeedListResponse;
 import com.basicbug.bikini.dto.FeedUpdateRequestDto;
-import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +33,7 @@ public class FeedController {
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<Void> addFeed(@RequestBody FeedCreateRequestDto feedCreateRequestDto) {
-        //TODO model <-> dto 변환은 어디서 수행하는 것이 좋을까?
-        Feed feed = feedCreateRequestDto.toEntity();
-        feedService.createFeed(feed);
+        feedService.createFeed(feedCreateRequestDto);
         return CommonResponse.empty();
     }
 

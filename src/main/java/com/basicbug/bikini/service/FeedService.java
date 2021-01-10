@@ -1,5 +1,6 @@
 package com.basicbug.bikini.service;
 
+import com.basicbug.bikini.dto.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.FeedListResponse;
 import com.basicbug.bikini.dto.FeedUpdateRequestDto;
@@ -60,12 +61,13 @@ public class FeedService {
     }
 
     /**
-     * 전달받은 피드를 DB에 저장한다.
+     * Save Feed information to database
      *
-     * @param feed 등록할 피드
+     * @param feedCreateRequestDto FeedDto that has feed information to be saved
      */
-    public void createFeed(Feed feed) {
-        //TODO: Feed 생성 성공/실패 여부 처리 필요
+    public void createFeed(FeedCreateRequestDto feedCreateRequestDto) {
+        //TODO: Need to handle result of save process
+        Feed feed = feedCreateRequestDto.toEntity();
         feedRepository.save(feed);
     }
 
