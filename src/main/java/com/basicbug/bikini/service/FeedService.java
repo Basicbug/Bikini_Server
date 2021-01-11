@@ -9,11 +9,14 @@ import com.basicbug.bikini.repository.FeedRepository;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FeedService {
@@ -75,6 +78,7 @@ public class FeedService {
      * Update Feed information
      * @param feedUpdateRequestDto
      */
+    @Transactional
     public void updateFeed(FeedUpdateRequestDto feedUpdateRequestDto) {
         Feed newFeed = feedUpdateRequestDto.toEntity();
         Feed oldFeed = feedRepository.findByFeedId(newFeed.getFeedId());
@@ -88,6 +92,7 @@ public class FeedService {
      * @param feedDeleteRequestDto
      * @return True if delete success otherwise False
      */
+    @Transactional
     public boolean deleteFeed(FeedDeleteRequestDto feedDeleteRequestDto) {
         // TODO: Need to validate feedId
         long result = feedRepository.deleteByFeedId(UUID.fromString(feedDeleteRequestDto.getFeedId()));
@@ -97,6 +102,7 @@ public class FeedService {
     /**
      * 현재 DB에 존재하는 모든 피드 목록을 삭제한다.
      */
+    @Transactional
     public void clearFeedList() {
         feedRepository.deleteAll();
     }

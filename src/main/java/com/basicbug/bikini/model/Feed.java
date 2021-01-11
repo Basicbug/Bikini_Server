@@ -42,7 +42,7 @@ public class Feed {
     private String profileImageUrl;
 
     @Embedded
-    private Point position;
+    private Location location;
 
     public void update(Feed newFeed) {
         this.feedNumOfUser = newFeed.feedNumOfUser;
@@ -52,6 +52,7 @@ public class Feed {
         this.content = newFeed.content;
         this.imageUrl = newFeed.imageUrl;
         this.profileImageUrl = newFeed.profileImageUrl;
+        this.location = newFeed.location;
     }
 
     public FeedResponse toResponseDto() {
@@ -64,7 +65,7 @@ public class Feed {
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .numOfLikes(numOfLikes)
-            .position(position)
+            .location(location)
             .build();
     }
 
@@ -76,7 +77,7 @@ public class Feed {
             .imageUrl(imageUrl)
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
-            .position(position)
+            .location(location)
             .build();
     }
 }
