@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import com.basicbug.bikini.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
-import com.basicbug.bikini.model.Point;
+import com.basicbug.bikini.model.Location;
 import com.basicbug.bikini.repository.FeedRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -35,7 +35,7 @@ class FeedServiceTest {
     private final String TEST_IMAGE_URL = "TEST_IMAGE_URL";
     private final String TEST_PROFILE_IMAGE_URL = "TEST_PROFILE_IMAGE_URL";
     private final int TEST_COUNT_OF_GROUP_FEED = 0;
-    private final Point TEST_POINT = new Point();
+    private final Location TEST_LOCATION = new Location();
     private final Feed TEST_FEED = Feed.builder().feedId(TEST_UUID).build();
 
     @Test
@@ -67,7 +67,7 @@ class FeedServiceTest {
             .imageUrl(TEST_IMAGE_URL)
             .profileImageUrl(TEST_PROFILE_IMAGE_URL)
             .countOfGroupFeed(TEST_COUNT_OF_GROUP_FEED)
-            .position(TEST_POINT)
+            .location(TEST_LOCATION)
             .build();
 
         feedService.updateFeed(requestDto);
