@@ -1,4 +1,4 @@
-package com.basicbug.bikini.dto;
+package com.basicbug.bikini.dto.feed;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

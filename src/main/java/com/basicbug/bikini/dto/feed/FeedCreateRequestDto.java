@@ -1,4 +1,4 @@
-package com.basicbug.bikini.dto;
+package com.basicbug.bikini.dto.feed;
 
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.Location;
@@ -7,14 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Builder
 @Getter
-@NoArgsConstructor
+@Setter
+@Builder
 @AllArgsConstructor
-public class FeedUpdateRequestDto {
+@NoArgsConstructor
+public class FeedCreateRequestDto {
 
-    private String feedId;
     private Integer feedNumOfUser;
     private String userId;
     private String content;
@@ -25,7 +26,7 @@ public class FeedUpdateRequestDto {
 
     public Feed toEntity() {
         return Feed.builder()
-            .feedId(UUID.fromString(feedId))
+            .feedId(UUID.randomUUID())
             .feedNumOfUser(feedNumOfUser)
             .userId(userId)
             .content(content)
@@ -34,5 +35,12 @@ public class FeedUpdateRequestDto {
             .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();
+    }
+
+    @Override
+    public String toString() {
+        return "FeedRequestDto(feedNumOfUser=" + feedNumOfUser + ", userId=" + userId + ", content="
+            + content + ", imageUrl=" + imageUrl + ", profileImageUrl=" + profileImageUrl
+            + ", countOfGroupFeed=" + countOfGroupFeed + ", location=" + location + ")";
     }
 }

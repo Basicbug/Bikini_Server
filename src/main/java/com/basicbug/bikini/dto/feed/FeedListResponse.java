@@ -1,4 +1,4 @@
-package com.basicbug.bikini.dto;
+package com.basicbug.bikini.dto.feed;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

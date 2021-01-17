@@ -6,8 +6,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.basicbug.bikini.dto.FeedDeleteRequestDto;
-import com.basicbug.bikini.dto.FeedUpdateRequestDto;
+import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
+import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.Location;
 import com.basicbug.bikini.repository.FeedRepository;
