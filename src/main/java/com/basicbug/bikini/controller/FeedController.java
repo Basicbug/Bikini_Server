@@ -1,11 +1,12 @@
 package com.basicbug.bikini.controller;
 
 
-import com.basicbug.bikini.dto.CommonResponse;
-import com.basicbug.bikini.dto.FeedCreateRequestDto;
-import com.basicbug.bikini.dto.FeedDeleteRequestDto;
-import com.basicbug.bikini.dto.FeedListResponse;
-import com.basicbug.bikini.dto.FeedUpdateRequestDto;
+import com.basicbug.bikini.dto.common.CommonResponse;
+import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
+import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
+import com.basicbug.bikini.dto.feed.FeedListResponse;
+import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
+import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,6 +84,14 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getFeedListOfUser(@PathVariable String userId) {
         FeedListResponse feedListResponse = feedService.getFeedListOf(userId);
+        return CommonResponse.of(feedListResponse);
+    }
+
+    @ApiOperation(value = "Get feed list that posted near by specified location")
+    @GetMapping("/nearby")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<FeedListResponse> getNearLocationFeedList(FeedNearLocationRequestDto feedNearLocationRequestDto) {
+        FeedListResponse feedListResponse = feedService.getNearByFeedList(feedNearLocationRequestDto);
         return CommonResponse.of(feedListResponse);
     }
 }

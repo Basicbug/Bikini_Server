@@ -1,11 +1,14 @@
 package com.basicbug.bikini.service;
 
-import com.basicbug.bikini.dto.FeedCreateRequestDto;
-import com.basicbug.bikini.dto.FeedDeleteRequestDto;
-import com.basicbug.bikini.dto.FeedListResponse;
-import com.basicbug.bikini.dto.FeedUpdateRequestDto;
+import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
+import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
+import com.basicbug.bikini.dto.feed.FeedListResponse;
+import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
+import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
+import com.basicbug.bikini.model.Point;
 import com.basicbug.bikini.repository.FeedRepository;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +55,7 @@ public class FeedService {
 
     /**
      * numOfLikes 로 정렬 시 상위 limit 개의 피드를 반환한다.
+     *
      * @param limit 반환할 피드의 수
      * @return numOfLikes 로 정렬한 피드 중 상위 limit 개의 리스트
      */
@@ -61,6 +65,23 @@ public class FeedService {
             .stream()
             .map(Feed::toResponseDto)
             .collect(Collectors.toList()));
+    }
+
+    /**
+     * Get feed lists that posted near by specified location
+     *
+     * @param feedNearLocationRequestDto
+     * @return feed list that posted near by specified location
+     */
+    public FeedListResponse getNearByFeedList(FeedNearLocationRequestDto feedNearLocationRequestDto) {
+        Point point = new Point(feedNearLocationRequestDto.getLatitude(), feedNearLocationRequestDto.getLongitude());
+        double radius = feedNearLocationRequestDto.getRadius();
+        List<Feed> feeds = feedRepository.findFeedsNearLocation(point.getLatitude(), point.getLongitude(), radius);
+        return new FeedListResponse(
+            feeds.stream()
+                .map(Feed::toResponseDto)
+                .collect(Collectors.toList())
+        );
     }
 
     /**
@@ -76,6 +97,7 @@ public class FeedService {
 
     /**
      * Update Feed information
+     *
      * @param feedUpdateRequestDto
      */
     @Transactional
@@ -89,6 +111,7 @@ public class FeedService {
 
     /**
      * Remove Feed associated with feedId inside of feedDeleteRequestDto
+     *
      * @param feedDeleteRequestDto
      * @return True if delete success otherwise False
      */
