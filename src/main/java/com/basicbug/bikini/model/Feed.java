@@ -1,7 +1,7 @@
 package com.basicbug.bikini.model;
 
-import com.basicbug.bikini.dto.FeedCreateRequestDto;
-import com.basicbug.bikini.dto.FeedResponse;
+import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
+import com.basicbug.bikini.dto.feed.FeedResponse;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
