@@ -19,6 +19,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     String HAVERSINE_FORMULA = "(6371 * acos(cos(radians(:latitude)) * cos(radians(f.location.latitude)) *" +
         " cos(radians(f.location.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(f.location.latitude))))";
+
     @Query("SELECT f FROM Feed f WHERE " + HAVERSINE_FORMULA + " < :distance ORDER BY "+ HAVERSINE_FORMULA + " DESC")
     List<Feed> findFeedsNearLocation(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("distance") double radius);
 }

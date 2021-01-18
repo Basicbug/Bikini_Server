@@ -76,7 +76,7 @@ public class FeedService {
     public FeedListResponse getNearByFeedList(FeedNearLocationRequestDto feedNearLocationRequestDto) {
         Point point = new Point(feedNearLocationRequestDto.getLatitude(), feedNearLocationRequestDto.getLongitude());
         double radius = feedNearLocationRequestDto.getRadius();
-        List<Feed> feeds = feedRepository.findFeedsNearLocation(point.getLatitude(), point.getLongitude(), radius);
+        List<Feed> feeds = feedRepository.findFeedsNearLocation(point.getLongitude(), point.getLatitude(), radius);
         return new FeedListResponse(
             feeds.stream()
                 .map(Feed::toResponseDto)
