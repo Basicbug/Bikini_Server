@@ -1,5 +1,8 @@
 package com.basicbug.bikini.controller;
 
+import com.basicbug.bikini.dto.auth.NaverAuthRequestDto;
+import com.basicbug.bikini.dto.auth.NaverProfileResponseDto;
+import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.model.NaverAuth;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +18,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
@@ -32,13 +37,35 @@ public class AuthController {
     @Value("${spring.social.naver.url.login}")
     private String baseUrl;
 
+    @Value("${spring.social.naver.url.profile}")
+    private String profileUrl;
+
     @Value("${spring.social.naver.client_id}")
     private String clientId;
 
     @Value("${spring.social.naver.client_secret}")
     private String clientSecret;
 
-    @GetMapping("/login")
+    @GetMapping("/login/naver")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<Object> login(NaverAuthRequestDto naverAuthRequestDto) {
+        String accessToken = naverAuthRequestDto.getAccessToken();
+        WebClient webClient = WebClient.builder().build();
+
+        NaverProfileResponseDto response = webClient.get().uri(profileUrl)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+            .retrieve()
+            .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
+                log.error("login error occurs");
+                throw new RuntimeException("Naver login exception");
+            })
+            .bodyToMono(NaverProfileResponseDto.class)
+            .block();
+
+        return CommonResponse.empty();
+    }
+
+    @GetMapping("/test/login")
     public ModelAndView naverLogin(ModelAndView modelAndView) {
         String redirectUrl = "http://localhost:8080/v1/auth/redirect";
 
