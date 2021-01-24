@@ -1,12 +1,16 @@
 package com.basicbug.bikini.dto.auth;
 
-import com.basicbug.bikini.model.NaverUser;
+import com.basicbug.bikini.model.NaverProfile;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class NaverProfileResponseDto {
 
     private String resultCode;
     private String message;
-    private NaverUser response;
+    private NaverProfile response;
 }

@@ -1,12 +1,18 @@
 package com.basicbug.bikini.controller;
 
 import com.basicbug.bikini.dto.auth.NaverAuthRequestDto;
+import com.basicbug.bikini.dto.auth.NaverAuthResponseDto;
 import com.basicbug.bikini.dto.auth.NaverProfileResponseDto;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.model.NaverAuth;
+import com.basicbug.bikini.model.NaverProfile;
+import com.basicbug.bikini.model.User;
+import com.basicbug.bikini.model.UserPrincipal;
+import com.basicbug.bikini.util.JwtTokenProvider;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +40,8 @@ public class AuthController {
 
     private final Gson gson;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Value("${spring.social.naver.url.login}")
     private String baseUrl;
 
@@ -48,9 +56,11 @@ public class AuthController {
 
     @GetMapping("/login/naver")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<Object> login(NaverAuthRequestDto naverAuthRequestDto) {
+    public CommonResponse<NaverAuthResponseDto> login(NaverAuthRequestDto naverAuthRequestDto) {
         String accessToken = naverAuthRequestDto.getAccessToken();
         WebClient webClient = WebClient.builder().build();
+
+        log.error("access token is {}", accessToken);
 
         NaverProfileResponseDto response = webClient.get().uri(profileUrl)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -62,7 +72,16 @@ public class AuthController {
             .bodyToMono(NaverProfileResponseDto.class)
             .block();
 
-        return CommonResponse.empty();
+        if (response != null) {
+            NaverProfile profile = response.getResponse();
+            User user = new User(profile.getEmail(), new RandomString(10).nextString(), "ROLE_USER");
+            final UserPrincipal userPrincipal = new UserPrincipal(user);
+
+            String jwt = jwtTokenProvider.generateToken(userPrincipal);
+            return CommonResponse.of(new NaverAuthResponseDto(jwt));
+        } else {
+            return CommonResponse.empty();
+        }
     }
 
     @GetMapping("/test/login")

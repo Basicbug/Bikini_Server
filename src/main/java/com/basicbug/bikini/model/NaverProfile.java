@@ -3,7 +3,7 @@ package com.basicbug.bikini.model;
 import lombok.Getter;
 
 @Getter
-public class NaverUser {
+public class NaverProfile {
 
     private String email;
     private String nickname;

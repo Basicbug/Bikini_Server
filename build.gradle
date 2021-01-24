@@ -23,6 +23,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     // Webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
@@ -51,6 +54,8 @@ dependencies {
     // Lombok
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
+
+    implementation 'com.auth0:java-jwt:3.10.3'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
