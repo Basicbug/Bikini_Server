@@ -23,11 +23,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
+
+    // Mustache
+    implementation 'org.springframework.boot:spring-boot-starter-mustache'
+
     // Swagger
     implementation 'io.springfox:springfox-swagger2:2.8.0'
     implementation 'io.springfox:springfox-swagger-ui:2.8.0'
 
     compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
+
+    // Gson
+    implementation 'com.google.code.gson:gson'
 
     // H2
     runtimeOnly 'com.h2database:h2'
@@ -38,6 +54,8 @@ dependencies {
     // Lombok
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
+
+    implementation 'com.auth0:java-jwt:3.10.3'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
