@@ -11,3 +11,21 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: create-drop
+
+  social:
+    naver:
+      client_id: ${NAVER_CLIENT_ID}
+      client_secret: ${NAVER_CLIENT_SECRET}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+    s3:
+      bucket: ${S3_BUCKET_NAME}
