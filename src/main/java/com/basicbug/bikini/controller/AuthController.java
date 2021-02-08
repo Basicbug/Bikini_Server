@@ -1,18 +1,12 @@
 package com.basicbug.bikini.controller;
 
 import com.basicbug.bikini.dto.auth.NaverAuthRequestDto;
-import com.basicbug.bikini.dto.auth.NaverAuthResponseDto;
-import com.basicbug.bikini.dto.auth.NaverProfileResponseDto;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.model.NaverAuth;
-import com.basicbug.bikini.model.NaverProfile;
-import com.basicbug.bikini.model.User;
-import com.basicbug.bikini.model.UserPrincipal;
-import com.basicbug.bikini.util.JwtTokenProvider;
+import com.basicbug.bikini.service.UserService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
@@ -40,7 +33,7 @@ public class AuthController {
 
     private final Gson gson;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
     @Value("${spring.social.naver.url.login}")
     private String baseUrl;
@@ -56,31 +49,14 @@ public class AuthController {
 
     @GetMapping("/login/naver")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<NaverAuthResponseDto> login(NaverAuthRequestDto naverAuthRequestDto) {
-        String accessToken = naverAuthRequestDto.getAccessToken();
-        WebClient webClient = WebClient.builder().build();
+    public CommonResponse<String> login(NaverAuthRequestDto naverAuthRequestDto) {
+        String jwtToken = userService.login(naverAuthRequestDto);
 
-        log.error("access token is {}", accessToken);
-
-        NaverProfileResponseDto response = webClient.get().uri(profileUrl)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-            .retrieve()
-            .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
-                log.error("login error occurs");
-                throw new RuntimeException("Naver login exception");
-            })
-            .bodyToMono(NaverProfileResponseDto.class)
-            .block();
-
-        if (response != null) {
-            NaverProfile profile = response.getResponse();
-            User user = new User(profile.getEmail(), new RandomString(10).nextString(), "ROLE_USER");
-            final UserPrincipal userPrincipal = new UserPrincipal(user);
-
-            String jwt = jwtTokenProvider.generateToken(userPrincipal);
-            return CommonResponse.of(new NaverAuthResponseDto(jwt));
+        if (jwtToken.isEmpty()) {
+            AuthError error = AuthError.INVALID_PARAM;
+            return CommonResponse.error(error.errorCode, error.errorMsg);
         } else {
-            return CommonResponse.empty();
+            return CommonResponse.of(jwtToken);
         }
     }
 
@@ -122,5 +98,18 @@ public class AuthController {
         modelAndView.addObject("authInfo", result);
         modelAndView.setViewName("auth/redirect");
         return modelAndView;
+    }
+
+    enum AuthError {
+
+        INVALID_PARAM("1000", "Invalid param");
+
+        String errorCode;
+        String errorMsg;
+
+        AuthError(String errorCode, String errorMsg) {
+            this.errorCode = errorCode;
+            this.errorMsg = errorMsg;
+        }
     }
 }
