@@ -4,11 +4,14 @@ package com.basicbug.bikini.controller;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
+import com.basicbug.bikini.dto.feed.FeedImageResponseDto;
 import com.basicbug.bikini.dto.feed.FeedListResponse;
 import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
+import com.basicbug.bikini.model.FeedImage;
 import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FeedController {
 
     private final FeedService feedService;
+    private static final String FEED_IMAGE_DIR = "feed";
 
     @ApiOperation(value = "Add feed", notes = "Feed 정보 추가")
     @PostMapping("/add")
@@ -92,5 +97,13 @@ public class FeedController {
     public CommonResponse<FeedListResponse> getNearLocationFeedList(FeedNearLocationRequestDto feedNearLocationRequestDto) {
         FeedListResponse feedListResponse = feedService.getNearByFeedList(feedNearLocationRequestDto);
         return CommonResponse.of(feedListResponse);
+    }
+
+    @ApiOperation(value = "Upload images", notes = "피드 내 이미지 업로드")
+    @PostMapping("/upload/images")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommonResponse<List<FeedImageResponseDto>> uploadImage(List<MultipartFile> images) {
+        List<FeedImageResponseDto> feedImages = feedService.uploadImages(images, FEED_IMAGE_DIR);
+        return CommonResponse.of(feedImages);
     }
 }

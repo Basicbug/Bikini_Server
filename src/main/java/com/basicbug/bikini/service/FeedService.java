@@ -2,10 +2,12 @@ package com.basicbug.bikini.service;
 
 import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
+import com.basicbug.bikini.dto.feed.FeedImageResponseDto;
 import com.basicbug.bikini.dto.feed.FeedListResponse;
 import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
+import com.basicbug.bikini.model.FeedImage;
 import com.basicbug.bikini.model.Point;
 import com.basicbug.bikini.repository.FeedRepository;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FeedService {
 
     private final FeedRepository feedRepository;
+    private final ImageService imageService;
 
     /**
      * DB에 존재하는 모든 피드 목록을 반환한다.
@@ -128,5 +132,11 @@ public class FeedService {
     @Transactional
     public void clearFeedList() {
         feedRepository.deleteAll();
+    }
+
+    @Transactional
+    public List<FeedImageResponseDto> uploadImages(List<MultipartFile> images, String dirName) {
+        List<FeedImage> feedImages = imageService.uploadImages(images, dirName);
+        return FeedImageResponseDto.listOf(feedImages);
     }
 }
