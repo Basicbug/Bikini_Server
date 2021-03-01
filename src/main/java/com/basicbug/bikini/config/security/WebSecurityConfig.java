@@ -26,7 +26,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/v1/auth/**").permitAll()
+            .antMatchers("/h2-console/**").permitAll()
             .anyRequest().authenticated()
+            .and()
+            .headers().frameOptions().disable()
             .and()
             .addFilter(new JwtAuthorizationFilter(authenticationManager()));
     }
