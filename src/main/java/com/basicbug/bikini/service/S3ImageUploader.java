@@ -1,5 +1,7 @@
 package com.basicbug.bikini.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -7,7 +9,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,18 +49,57 @@ public class S3ImageUploader implements ImageUploader {
     }
 
     @Override
-    public boolean upload(MultipartFile multipartFile) {
-        String fileName = multipartFile.getOriginalFilename();
-        String imageUrl = "";
-        try {
-            amazonS3.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), null)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+    public String upload(MultipartFile multipartFile, String fileName) {
+        final File file = convertToFile(multipartFile);
+        final String imageUrl = uploadToBucket(file, fileName);
+        removeFile(file);
 
-            imageUrl =  amazonS3.getUrl(bucket, fileName).toString();
-        } catch (IOException e) {
-            log.error("Fail to upload file {}", e.getMessage());
+        return imageUrl;
+    }
+
+    private String uploadToBucket(File file, String fileName) {
+        final PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, fileName, file)
+                                                    .withCannedAcl(CannedAccessControlList.PublicRead);
+        try {
+            amazonS3.putObject(putObjectRequest);
+        } catch (AmazonServiceException amazonServiceException) {
+            log.error("AmazonServiceException ${}", amazonServiceException.getMessage());
+            return "";
+        } catch (SdkClientException sdkClientException) {
+            log.error("Sdk client exception ${}", sdkClientException.getMessage());
+            return "";
         }
 
-        return !imageUrl.isEmpty();
+        return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
+    private void removeFile(File file) {
+        try {
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            log.error("Remove file failure ${}", e.getMessage());
+        }
+    }
+
+    private File convertToFile(MultipartFile multipartFile) {
+        String originalFilename = Objects.requireNonNull(multipartFile.getOriginalFilename());
+        File newFile = new File(originalFilename);
+
+        try {
+            if (newFile.createNewFile()) {
+                return writeTo(multipartFile, newFile);
+            }
+        } catch (IOException exception) {
+            log.error("Fail to convertToFile ${}", exception.getMessage());
+        }
+
+        throw new RuntimeException("convertToFile is failed");
+    }
+
+    private File writeTo(MultipartFile data, File destFile) throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(destFile)) {
+            fileOutputStream.write(data.getBytes());
+        }
+        return destFile;
     }
 }

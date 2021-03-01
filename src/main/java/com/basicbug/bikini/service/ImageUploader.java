@@ -4,5 +4,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageUploader {
 
-    boolean upload(MultipartFile multipartFile);
+    String upload(MultipartFile multipartFile, String dirName);
 }

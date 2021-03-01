@@ -2,13 +2,16 @@ package com.basicbug.bikini.model;
 
 import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.feed.FeedResponse;
+import java.util.List;
 import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,11 +37,20 @@ public class Feed {
     private UUID feedId = UUID.randomUUID();
 
     private int feedNumOfUser;
+
     private int countOfGroupFeed;
+
     private long numOfLikes;
+
     private String userId;
+
     private String content;
+
     private String imageUrl;
+
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.PERSIST)
+    private List<FeedImage> images;
+
     private String profileImageUrl;
 
     @Embedded
