@@ -93,9 +93,10 @@ public class FeedService {
      *
      * @param feedCreateRequestDto FeedDto that has feed information to be saved
      */
+    @Transactional
     public void createFeed(FeedCreateRequestDto feedCreateRequestDto) {
-        //TODO: Need to handle result of save process
-        Feed feed = feedCreateRequestDto.toEntity();
+        final List<FeedImage> feedImages = imageService.findAllFeedImageByIds(feedCreateRequestDto.getImageIds());
+        final Feed feed = createFeedByRequest(feedCreateRequestDto, feedImages);
         feedRepository.save(feed);
     }
 
@@ -134,7 +135,20 @@ public class FeedService {
         feedRepository.deleteAll();
     }
 
-    @Transactional
+    private Feed createFeedByRequest(FeedCreateRequestDto createRequestDto, List<FeedImage> feedImages) {
+        return Feed.builder()
+            .feedId(UUID.randomUUID())
+            .feedNumOfUser(createRequestDto.getFeedNumOfUser())
+            .userId(createRequestDto.getUserId())
+            .content(createRequestDto.getContent())
+            .images(feedImages)
+            .imageUrl(createRequestDto.getImageUrl())
+            .profileImageUrl(createRequestDto.getProfileImageUrl())
+            .countOfGroupFeed(createRequestDto.getCountOfGroupFeed())
+            .location(createRequestDto.getLocation())
+            .build();
+    }
+
     public List<FeedImageResponseDto> uploadImages(List<MultipartFile> images, String dirName) {
         List<FeedImage> feedImages = imageService.uploadImages(images, dirName);
         return FeedImageResponseDto.listOf(feedImages);

@@ -15,8 +15,10 @@ public class FeedImageResponseDto {
 
     private Long id;
 
+    private String url;
+
     public static FeedImageResponseDto of(FeedImage feedImage) {
-        return new FeedImageResponseDto(feedImage.getId());
+        return new FeedImageResponseDto(feedImage.getId(), feedImage.getUrl());
     }
 
     public static List<FeedImageResponseDto> listOf(List<FeedImage> feedImages) {
