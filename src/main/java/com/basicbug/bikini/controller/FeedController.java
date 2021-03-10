@@ -103,6 +103,7 @@ public class FeedController {
     @PostMapping("/upload/images")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<List<FeedImageResponseDto>> uploadImage(List<MultipartFile> images) {
+        log.info("uploadImage request ${}", images);
         List<FeedImageResponseDto> feedImages = feedService.uploadImages(images, FEED_IMAGE_DIR);
         return CommonResponse.of(feedImages);
     }
