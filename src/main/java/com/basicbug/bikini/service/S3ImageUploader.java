@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,12 +50,17 @@ public class S3ImageUploader implements ImageUploader {
     }
 
     @Override
-    public String upload(MultipartFile multipartFile, String fileName) {
+    public String upload(MultipartFile multipartFile, String dirName) {
         final File file = convertToFile(multipartFile);
+        final String fileName = generateFileName(file, dirName);
         final String imageUrl = uploadToBucket(file, fileName);
         removeFile(file);
 
         return imageUrl;
+    }
+
+    private String generateFileName(File file, String dirName) {
+        return dirName + File.separator + UUID.randomUUID().toString() + "-" + file.getName();
     }
 
     private String uploadToBucket(File file, String fileName) {
