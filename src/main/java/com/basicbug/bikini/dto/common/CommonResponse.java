@@ -35,8 +35,7 @@ public class CommonResponse<T> {
         return new CommonResponse<>(result, code, null);
     }
 
-    public static <T> CommonResponse<T> of(final T result, final String code,
-        final String message) {
+    public static <T> CommonResponse<T> of(final T result, final String code, final String message) {
         return new CommonResponse<>(result, code, message);
     }
 }

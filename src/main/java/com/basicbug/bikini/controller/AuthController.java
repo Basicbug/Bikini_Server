@@ -56,7 +56,7 @@ public class AuthController {
             AuthError error = AuthError.INVALID_PARAM;
             return CommonResponse.error(error.errorCode, error.errorMsg);
         } else {
-            return CommonResponse.of(jwtToken);
+            return CommonResponse.of(jwtToken, "200", "Success");
         }
     }
 
