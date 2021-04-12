@@ -1,13 +1,18 @@
 package com.basicbug.bikini.controller;
 
+import com.basicbug.bikini.config.auth.AuthConfig;
+import com.basicbug.bikini.config.auth.KakaoAuthConfig;
+import com.basicbug.bikini.config.auth.NaverAuthConfig;
 import com.basicbug.bikini.dto.auth.NaverAuthRequestDto;
 import com.basicbug.bikini.dto.common.CommonResponse;
-import com.basicbug.bikini.model.NaverAuth;
+import com.basicbug.bikini.model.auth.AuthProvider;
+import com.basicbug.bikini.model.auth.KakaoAuth;
+import com.basicbug.bikini.model.auth.NaverAuth;
+import com.basicbug.bikini.model.auth.SocialAuth;
 import com.basicbug.bikini.service.UserService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,17 +41,9 @@ public class AuthController {
 
     private final UserService userService;
 
-    @Value("${spring.social.naver.url.login}")
-    private String baseUrl;
+    private final NaverAuthConfig naverAuthConfig;
 
-    @Value("${spring.social.naver.url.profile}")
-    private String profileUrl;
-
-    @Value("${spring.social.naver.client_id}")
-    private String clientId;
-
-    @Value("${spring.social.naver.client_secret}")
-    private String clientSecret;
+    private final KakaoAuthConfig kakaoAuthConfig;
 
     @GetMapping("/login/naver")
     @ResponseStatus(HttpStatus.OK)
@@ -61,43 +59,71 @@ public class AuthController {
     }
 
     @GetMapping("/test/login")
-    public ModelAndView naverLogin(ModelAndView modelAndView) {
-        String redirectUrl = "http://localhost:8080/v1/auth/redirect";
+    public ModelAndView testLoginPage(ModelAndView modelAndView) {
+        String naverRedirect = "http://localhost:8080/v1/auth/redirect/naver";
+        String kakaoRedirect = "http://localhost:8080/v1/auth/redirect/kakao";
 
-        StringBuilder loginUrl = new StringBuilder(baseUrl);
-        loginUrl.append("?client_id=").append(clientId)
-            .append("&response_type=code")
-            .append("&redirect_uri=").append(redirectUrl);
+        String naverLoginUrl = getLoginUrl(naverAuthConfig, naverRedirect);
+        String kakaoLoginUrl = getLoginUrl(kakaoAuthConfig, kakaoRedirect);
 
-        modelAndView.addObject("loginUrl", loginUrl.toString());
+        modelAndView.addObject("naverLoginUrl", naverLoginUrl);
+        modelAndView.addObject("kakaoLoginUrl", kakaoLoginUrl);
         modelAndView.setViewName("auth/login");
         return modelAndView;
     }
 
-    @GetMapping("/redirect")
-    public ModelAndView redirectNaverLogin(ModelAndView modelAndView, @RequestParam String code) {
+    private String getLoginUrl(AuthConfig authConfig, String redirectUri) {
+        StringBuilder loginUrl = new StringBuilder(authConfig.getBaseUrl());
+        loginUrl.append("?client_id=").append(authConfig.getClientId())
+            .append("&redirect_uri=").append(redirectUri)
+            .append("&response_type=code");
+
+        return loginUrl.toString();
+    }
+
+    @GetMapping("/redirect/{provider}")
+    public ModelAndView redirectNaverLogin(ModelAndView modelAndView, @RequestParam String code, @PathVariable String provider) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        AuthProvider authProvider = AuthProvider.valueOf(provider.toUpperCase());
+        AuthConfig authConfig = getServiceAuthConfig(authProvider);
+
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", clientId);
-        params.add("client_secret", clientSecret);
-        params.add("redirect_uri", "http://localhost:8080/v1/auth/redirect");
+        params.add("client_id", authConfig.getClientId());
+        params.add("client_secret", authConfig.getClientSecret());
+        params.add("redirect_uri", "http://localhost:8080/v1/auth/redirect/" + authProvider.getName());
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, httpHeaders);
-        ResponseEntity<String> response = restTemplate.postForEntity("https://nid.naver.com/oauth2.0/token", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(authConfig.getTokenUrl(), request, String.class);
 
-        NaverAuth result = null;
+        SocialAuth result = null;
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            result =  gson.fromJson(response.getBody(), NaverAuth.class);
+            result = getAuthResponse(authProvider, response.getBody());
         }
 
         modelAndView.addObject("authInfo", result);
         modelAndView.setViewName("auth/redirect");
         return modelAndView;
+    }
+
+    private SocialAuth getAuthResponse(AuthProvider provider, String body) {
+        if (provider == AuthProvider.KAKAO) {
+            return gson.fromJson(body, KakaoAuth.class);
+        } else {
+            return gson.fromJson(body, NaverAuth.class);
+        }
+    }
+
+    private AuthConfig getServiceAuthConfig(AuthProvider provider) {
+        if (provider == AuthProvider.KAKAO) {
+            return kakaoAuthConfig;
+        } else {
+            return naverAuthConfig;
+        }
     }
 
     enum AuthError {
