@@ -51,12 +51,17 @@ public class S3ImageUploader implements ImageUploader {
 
     @Override
     public String upload(MultipartFile multipartFile, String dirName) {
-        final File file = convertToFile(multipartFile);
-        final String fileName = generateFileName(file, dirName);
-        final String imageUrl = uploadToBucket(file, fileName);
-        removeFile(file);
+        try {
+            final File file = convertToFile(multipartFile);
+            final String fileName = generateFileName(file, dirName);
+            final String imageUrl = uploadToBucket(file, fileName);
+            removeFile(file);
 
-        return imageUrl;
+            return imageUrl;
+        } catch (Exception exception) {
+            log.error("Exception occurs while upload image " + exception.getMessage());
+        }
+        return "";
     }
 
     private String generateFileName(File file, String dirName) {
