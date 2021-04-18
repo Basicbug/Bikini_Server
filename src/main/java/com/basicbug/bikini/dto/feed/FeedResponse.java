@@ -3,6 +3,7 @@ package com.basicbug.bikini.dto.feed;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.Location;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class FeedResponse {
     private Integer feedNumOfUser;
     private String userId;
     private String content;
-    private String imageUrl;
+    private List<String> imageUrl;
     private String profileImageUrl;
     private Integer countOfGroupFeed;
     private Long numOfLikes;
@@ -33,7 +34,6 @@ public class FeedResponse {
             .feedNumOfUser(feedNumOfUser)
             .userId(userId)
             .content(content)
-            .imageUrl(imageUrl)
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .location(location)

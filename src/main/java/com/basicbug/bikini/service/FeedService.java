@@ -97,6 +97,7 @@ public class FeedService {
     public void createFeed(FeedCreateRequestDto feedCreateRequestDto) {
         final List<FeedImage> feedImages = imageService.findAllFeedImageByIds(feedCreateRequestDto.getImageIds());
         final Feed feed = createFeedByRequest(feedCreateRequestDto, feedImages);
+        feedImages.forEach(feedImage -> feedImage.setFeed(feed));
         feedRepository.save(feed);
     }
 

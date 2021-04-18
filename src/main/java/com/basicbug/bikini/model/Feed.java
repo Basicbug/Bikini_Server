@@ -2,8 +2,10 @@ package com.basicbug.bikini.model;
 
 import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.feed.FeedResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -16,12 +18,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Feed {
@@ -49,7 +53,7 @@ public class Feed {
     private String imageUrl;
 
     @OneToMany(mappedBy = "feed", cascade = CascadeType.PERSIST)
-    private List<FeedImage> images;
+    private List<FeedImage> images = new ArrayList<>();
 
     private String profileImageUrl;
 
@@ -73,7 +77,7 @@ public class Feed {
             .feedNumOfUser(feedNumOfUser)
             .userId(userId)
             .content(content)
-            .imageUrl(imageUrl)
+            .imageUrl(images.stream().map(FeedImage::getUrl).collect(Collectors.toList()))
             .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .numOfLikes(numOfLikes)
