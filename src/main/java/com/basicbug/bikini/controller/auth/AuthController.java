@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Slf4j
 @RestController
@@ -59,6 +60,7 @@ public class AuthController {
         }
     }
 
+    @ApiIgnore
     @GetMapping("/test/login")
     public ModelAndView testLoginPage(ModelAndView modelAndView) {
         String naverRedirect = "http://localhost:8080/v1/auth/redirect/naver";
@@ -82,6 +84,7 @@ public class AuthController {
         return loginUrl.toString();
     }
 
+    @ApiIgnore
     @GetMapping("/redirect/{provider}")
     public ModelAndView redirectNaverLogin(ModelAndView modelAndView, @RequestParam String code, @PathVariable String provider) {
         HttpHeaders httpHeaders = new HttpHeaders();
