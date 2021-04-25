@@ -1,4 +1,4 @@
-package com.basicbug.bikini.controller;
+package com.basicbug.bikini.controller.feed;
 
 
 import com.basicbug.bikini.dto.common.CommonResponse;
@@ -8,7 +8,6 @@ import com.basicbug.bikini.dto.feed.FeedImageResponseDto;
 import com.basicbug.bikini.dto.feed.FeedListResponse;
 import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
-import com.basicbug.bikini.model.FeedImage;
 import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
