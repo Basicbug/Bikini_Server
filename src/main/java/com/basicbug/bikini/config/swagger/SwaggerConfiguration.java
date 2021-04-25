@@ -1,5 +1,10 @@
 package com.basicbug.bikini.config.swagger;
 
+import static com.basicbug.bikini.config.swagger.SwaggerConstants.AUTH;
+import static com.basicbug.bikini.config.swagger.SwaggerConstants.COMMON;
+import static com.basicbug.bikini.config.swagger.SwaggerConstants.FEED;
+import static com.basicbug.bikini.config.swagger.SwaggerConstants.VERSION_1;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -14,22 +19,41 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
+    private static final String CONTROLLER_BASE_PATH = "com.basicbug.bikini.controller";
+    private static final String GROUP_URL_PATTERN = "/%s/%s/**";
+
     @Bean
-    public Docket swaggerApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo())
-            .select()
-            .apis(RequestHandlerSelectors.basePackage("com.basicbug.bikini.controller"))
-            .paths(PathSelectors.any())
-            .build();
+    public Docket feedApiDocket() {
+        return createDocket(FEED, String.format(GROUP_URL_PATTERN, VERSION_1, FEED), VERSION_1);
     }
 
-    private ApiInfo apiInfo() {
+    @Bean
+    public Docket authApiDocket() {
+        return createDocket(AUTH, String.format(GROUP_URL_PATTERN, VERSION_1, AUTH), VERSION_1);
+    }
+
+    @Bean
+    public Docket commonApiDocket() {
+        return createDocket(COMMON, String.format(GROUP_URL_PATTERN, VERSION_1, COMMON), VERSION_1);
+    }
+
+    private Docket createDocket(String groupName, String groupUrl, String version) {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .useDefaultResponseMessages(false)
+            .groupName(groupName)
+            .select()
+            .apis(RequestHandlerSelectors.basePackage(CONTROLLER_BASE_PATH))
+            .paths(PathSelectors.ant(groupUrl))
+            .build()
+            .apiInfo(apiInfo(groupName + "-" + version, version));
+    }
+
+    private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
-            .title("BasicBug API Documentation")
+            .title(title)
             .description("BasicBug Bikini API Docs")
             .license("BasicBug")
-            .version("1")
+            .version(version)
             .build();
     }
 }

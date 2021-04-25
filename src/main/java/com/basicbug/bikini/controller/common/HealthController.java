@@ -1,4 +1,4 @@
-package com.basicbug.bikini.controller;
+package com.basicbug.bikini.controller.common;
 
 import com.basicbug.bikini.dto.common.CommonResponse;
 import io.swagger.annotations.ApiOperation;

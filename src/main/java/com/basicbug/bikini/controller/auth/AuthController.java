@@ -1,4 +1,4 @@
-package com.basicbug.bikini.controller;
+package com.basicbug.bikini.controller.auth;
 
 import com.basicbug.bikini.config.auth.AuthConfig;
 import com.basicbug.bikini.config.auth.KakaoAuthConfig;
