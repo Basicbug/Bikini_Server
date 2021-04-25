@@ -1,12 +1,13 @@
 package com.basicbug.bikini.service;
 
-import com.basicbug.bikini.dto.auth.NaverAuthRequestDto;
+import com.basicbug.bikini.dto.auth.AuthRequestDto;
+import com.basicbug.bikini.dto.auth.KakaoProfileResponseDto;
 import com.basicbug.bikini.dto.auth.NaverProfileResponseDto;
 import com.basicbug.bikini.model.AuthConstants;
 import com.basicbug.bikini.model.CommonConstants;
-import com.basicbug.bikini.model.NaverProfile;
 import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.UserPrincipal;
+import com.basicbug.bikini.model.auth.NaverProfile;
 import com.basicbug.bikini.repository.UserRepository;
 import com.basicbug.bikini.util.JwtTokenProvider;
 import java.util.Optional;
@@ -22,18 +23,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Value("${spring.social.naver.url.login}")
-    private String baseUrl;
-
-    @Value("${spring.social.naver.url.profile}")
-    private String profileUrl;
-
-    @Value("${spring.social.naver.client_id}")
-    private String clientId;
-
-    @Value("${spring.social.naver.client_secret}")
-    private String clientSecret;
-
     private final UserRepository userRepository;
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -41,35 +30,56 @@ public class UserService {
     private final WebClient webClient = WebClient.builder().build();
 
     // TODO: Refactor to more generic way
-    public String login(NaverAuthRequestDto naverAuthRequestDto) {
-        String accessToken = naverAuthRequestDto.getAccessToken();
+    public String loadUserInfo(AuthRequestDto authRequestDto, String provider) {
+        String accessToken = authRequestDto.getAccessToken();
 
         if (accessToken.isEmpty()) return "";
 
-        NaverProfileResponseDto response = webClient.get().uri(profileUrl)
+        String profileUrl = "";
+        if (provider.equals("kakao")) {
+            profileUrl = "https://kapi.kakao.com/v2/user/me";
+        } else {
+            profileUrl = "https://openapi.naver.com/v1/nid/me";
+        }
+
+        WebClient.ResponseSpec spec = webClient.get().uri(profileUrl)
             .header(HttpHeaders.AUTHORIZATION, getAuthorization(accessToken))
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
-                throw new RuntimeException("naver login exception");
-            })
-            .bodyToMono(NaverProfileResponseDto.class)
-            .block();
+                throw new RuntimeException("Exception while getting profile info");
+            });
 
-        if (response == null) return "";
+        return requestProfileAndGetJwtToken(provider, spec);
+    }
 
-        NaverProfile profile = response.getResponse();
+    private String requestProfileAndGetJwtToken(String provider, WebClient.ResponseSpec spec) {
+        String email = "";
 
-        final Optional<User> userOptional = userRepository.findUserByEmail(profile.getEmail());
+        if (provider.equals("kakao")) {
+            KakaoProfileResponseDto response = spec.bodyToMono(KakaoProfileResponseDto.class).block();
+            if (response != null) {
+                Long id = response.getId();
+                email = id + "@kakao.com";
+            }
+        } else {
+            NaverProfileResponseDto response = spec.bodyToMono(NaverProfileResponseDto.class).block();
+            if (response != null) {
+                NaverProfile profile = response.getResponse();
+                email = profile.getEmail();
+            }
+        }
 
-        User user = userOptional.orElseGet(() ->
-            new User(profile.getEmail(), new RandomString(10).nextString(),AuthConstants.NORMAL_USER));
+        if (email.isEmpty()) return "";
+
+        final Optional<User> userOptional = userRepository.findUserByEmail(email);
+        final String targetEmail = email;
+        final User user = userOptional.orElseGet(() -> new User(targetEmail, new RandomString(10).nextString(), AuthConstants.NORMAL_USER));
 
         if (!userOptional.isPresent()) {
             userRepository.save(user);
         }
 
-        final UserPrincipal userPrincipal = new UserPrincipal(user);
-        return jwtTokenProvider.generateToken(userPrincipal);
+        return jwtTokenProvider.generateToken(new UserPrincipal(user));
     }
 
     private String getAuthorization(String accessToken) {

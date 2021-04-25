@@ -1,4 +1,4 @@
-package com.basicbug.bikini.model;
+package com.basicbug.bikini.model.auth;
 
 import lombok.Getter;
 

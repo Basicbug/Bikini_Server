@@ -1,6 +1,6 @@
 package com.basicbug.bikini.dto.auth;
 
-import com.basicbug.bikini.model.NaverProfile;
+import com.basicbug.bikini.model.auth.NaverProfile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -3,7 +3,7 @@ package com.basicbug.bikini.controller;
 import com.basicbug.bikini.config.auth.AuthConfig;
 import com.basicbug.bikini.config.auth.KakaoAuthConfig;
 import com.basicbug.bikini.config.auth.NaverAuthConfig;
-import com.basicbug.bikini.dto.auth.NaverAuthRequestDto;
+import com.basicbug.bikini.dto.auth.AuthRequestDto;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import com.basicbug.bikini.model.auth.KakaoAuth;
@@ -45,10 +45,11 @@ public class AuthController {
 
     private final KakaoAuthConfig kakaoAuthConfig;
 
-    @GetMapping("/login/naver")
+    @GetMapping("/login/{provider}")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<String> login(NaverAuthRequestDto naverAuthRequestDto) {
-        String jwtToken = userService.login(naverAuthRequestDto);
+    public CommonResponse<String> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
+        // TODO: provider validation
+        String jwtToken = userService.loadUserInfo(requestDto, provider);
 
         if (jwtToken.isEmpty()) {
             AuthError error = AuthError.INVALID_PARAM;
@@ -93,7 +94,6 @@ public class AuthController {
         params.add("grant_type", "authorization_code");
         params.add("client_id", authConfig.getClientId());
         params.add("client_secret", authConfig.getClientSecret());
-        params.add("redirect_uri", "http://localhost:8080/v1/auth/redirect/" + authProvider.getName());
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, httpHeaders);
