@@ -14,7 +14,6 @@ import com.basicbug.bikini.util.JwtTokenProvider;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
