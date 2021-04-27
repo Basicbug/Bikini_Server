@@ -50,10 +50,15 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<String> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
         // TODO: provider validation
+        if (!provider.equals(AuthProvider.KAKAO.getName()) && !provider.equals(AuthProvider.NAVER.getName())) {
+            AuthError error = AuthError.INVALID_PROVIDER;
+            return CommonResponse.error(error.errorCode, error.errorMsg);
+        }
+
         String jwtToken = userService.loadUserInfo(requestDto, provider);
 
         if (jwtToken.isEmpty()) {
-            AuthError error = AuthError.INVALID_PARAM;
+            AuthError error = AuthError.INVALID_ACCESS_TOKEN;
             return CommonResponse.error(error.errorCode, error.errorMsg);
         } else {
             return CommonResponse.of(jwtToken, "200", "Success");
@@ -131,7 +136,8 @@ public class AuthController {
 
     enum AuthError {
 
-        INVALID_PARAM("1000", "Invalid param");
+        INVALID_PROVIDER("1000", "Invalid provider"),
+        INVALID_ACCESS_TOKEN("2000", "Invalid access token");
 
         String errorCode;
         String errorMsg;
