@@ -8,12 +8,12 @@ import com.basicbug.bikini.model.CommonConstants;
 import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.UserPrincipal;
 import com.basicbug.bikini.model.auth.NaverProfile;
+import com.basicbug.bikini.model.auth.exception.OAuthProcessException;
 import com.basicbug.bikini.repository.UserRepository;
 import com.basicbug.bikini.util.JwtTokenProvider;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class UserService {
             .header(HttpHeaders.AUTHORIZATION, getAuthorization(accessToken))
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
-                throw new RuntimeException("Exception while getting profile info");
+                throw new OAuthProcessException("Fail to get profile");
             });
 
         return requestProfileAndGetJwtToken(provider, spec);
@@ -55,18 +55,22 @@ public class UserService {
     private String requestProfileAndGetJwtToken(String provider, WebClient.ResponseSpec spec) {
         String email = "";
 
-        if (provider.equals("kakao")) {
-            KakaoProfileResponseDto response = spec.bodyToMono(KakaoProfileResponseDto.class).block();
-            if (response != null) {
-                Long id = response.getId();
-                email = id + "@kakao.com";
+        try {
+            if (provider.equals("kakao")) {
+                KakaoProfileResponseDto response = spec.bodyToMono(KakaoProfileResponseDto.class).block();
+                if (response != null) {
+                    Long id = response.getId();
+                    email = id + "@kakao.com";
+                }
+            } else {
+                NaverProfileResponseDto response = spec.bodyToMono(NaverProfileResponseDto.class).block();
+                if (response != null) {
+                    NaverProfile profile = response.getResponse();
+                    email = profile.getEmail();
+                }
             }
-        } else {
-            NaverProfileResponseDto response = spec.bodyToMono(NaverProfileResponseDto.class).block();
-            if (response != null) {
-                NaverProfile profile = response.getResponse();
-                email = profile.getEmail();
-            }
+        } catch (OAuthProcessException ex) {
+            email = "";
         }
 
         if (email.isEmpty()) return "";
