@@ -26,8 +26,6 @@ public class ImageService {
         final String fileName = getFileName(image, dirName);
         final String imageUrl = uploader.upload(image, dirName);
         final FeedImage feedImage = FeedImage.builder()
-                                            .createdAt(LocalDateTime.now())
-                                            .modifiedAt(LocalDateTime.now())
                                             .name(fileName)
                                             .url(imageUrl)
                                             .build();

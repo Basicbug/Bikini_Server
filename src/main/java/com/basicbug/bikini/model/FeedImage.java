@@ -1,10 +1,7 @@
 package com.basicbug.bikini.model;
 
-import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
@@ -20,11 +17,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class FeedImage {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class FeedImage extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feed_id")
@@ -34,7 +27,4 @@ public class FeedImage {
 
     private String url;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime modifiedAt;
 }

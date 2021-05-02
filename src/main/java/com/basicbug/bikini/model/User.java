@@ -1,9 +1,6 @@
 package com.basicbug.bikini.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,7 +9,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class User {
+public class User extends BaseEntity {
 
     public User() {}
 
@@ -21,10 +18,6 @@ public class User {
         this.password = password;
         this.userRole = userRole;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Email
     @Size(max = 40)
