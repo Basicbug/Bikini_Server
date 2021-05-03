@@ -68,7 +68,7 @@ public class AuthController {
     @ApiIgnore
     @GetMapping("/test/login")
     public ModelAndView testLoginPage(ModelAndView modelAndView) {
-        String naverRedirect = "http://localhost:8080/v1/auth/redirect/naver";
+        String naverRedirect = "https://basicbug-bikini-dev.herokuapp.com/v1/auth/redirect/naver";
         String kakaoRedirect = "https://basicbug-bikini-dev.herokuapp.com/v1/auth/redirect/kakao";
 
         String naverLoginUrl = getLoginUrl(naverAuthConfig, naverRedirect);
