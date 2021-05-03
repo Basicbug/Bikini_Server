@@ -66,7 +66,7 @@ public class UserService {
                 NaverProfileResponseDto response = spec.bodyToMono(NaverProfileResponseDto.class).block();
                 if (response != null) {
                     NaverProfile profile = response.getResponse();
-                    email = profile.getEmail();
+                    email = profile.getId() + "@naver.com";
                 }
             }
         } catch (OAuthProcessException ex) {
