@@ -7,6 +7,7 @@ import com.basicbug.bikini.model.AuthConstants;
 import com.basicbug.bikini.model.CommonConstants;
 import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.UserPrincipal;
+import com.basicbug.bikini.model.auth.AuthProvider;
 import com.basicbug.bikini.model.auth.NaverProfile;
 import com.basicbug.bikini.model.auth.exception.OAuthProcessException;
 import com.basicbug.bikini.repository.UserRepository;
@@ -30,13 +31,13 @@ public class UserService {
     private final WebClient webClient = WebClient.builder().build();
 
     // TODO: Refactor to more generic way
-    public String loadUserInfo(AuthRequestDto authRequestDto, String provider) {
+    public String loadUserInfo(AuthRequestDto authRequestDto, AuthProvider provider) {
         String accessToken = authRequestDto.getAccessToken();
 
         if (accessToken.isEmpty()) return "";
 
         String profileUrl = "";
-        if (provider.equals("kakao")) {
+        if (provider == AuthProvider.KAKAO) {
             profileUrl = "https://kapi.kakao.com/v2/user/me";
         } else {
             profileUrl = "https://openapi.naver.com/v1/nid/me";
@@ -52,11 +53,11 @@ public class UserService {
         return requestProfileAndGetJwtToken(provider, spec);
     }
 
-    private String requestProfileAndGetJwtToken(String provider, WebClient.ResponseSpec spec) {
+    private String requestProfileAndGetJwtToken(AuthProvider provider, WebClient.ResponseSpec spec) {
         String email = "";
 
         try {
-            if (provider.equals("kakao")) {
+            if (provider == AuthProvider.KAKAO) {
                 KakaoProfileResponseDto response = spec.bodyToMono(KakaoProfileResponseDto.class).block();
                 if (response != null) {
                     Long id = response.getId();

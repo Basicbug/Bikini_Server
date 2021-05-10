@@ -49,13 +49,8 @@ public class AuthController {
     @GetMapping("/login/{provider}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<String> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
-        // TODO: provider validation
-        if (!provider.equals(AuthProvider.KAKAO.getName()) && !provider.equals(AuthProvider.NAVER.getName())) {
-            AuthError error = AuthError.INVALID_PROVIDER;
-            return CommonResponse.error(error.errorCode, error.errorMsg);
-        }
-
-        String jwtToken = userService.loadUserInfo(requestDto, provider);
+        AuthProvider authProvider = AuthProvider.of(provider.toUpperCase());
+        String jwtToken = userService.loadUserInfo(requestDto, authProvider);
 
         if (jwtToken.isEmpty()) {
             AuthError error = AuthError.INVALID_ACCESS_TOKEN;
