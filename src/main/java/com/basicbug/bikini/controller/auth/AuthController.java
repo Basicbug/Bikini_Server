@@ -51,13 +51,7 @@ public class AuthController {
     public CommonResponse<String> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
         AuthProvider authProvider = AuthProvider.of(provider.toUpperCase());
         String jwtToken = userService.loadUserInfo(requestDto, authProvider);
-
-        if (jwtToken.isEmpty()) {
-            AuthError error = AuthError.INVALID_ACCESS_TOKEN;
-            return CommonResponse.error(error.errorCode, error.errorMsg);
-        } else {
-            return CommonResponse.of(jwtToken, "200", "Success");
-        }
+        return CommonResponse.of(jwtToken, HttpStatus.OK.value(), "Success");
     }
 
     @ApiIgnore
@@ -126,20 +120,6 @@ public class AuthController {
             return kakaoAuthConfig;
         } else {
             return naverAuthConfig;
-        }
-    }
-
-    enum AuthError {
-
-        INVALID_PROVIDER("1000", "Invalid provider"),
-        INVALID_ACCESS_TOKEN("2000", "Invalid access token");
-
-        String errorCode;
-        String errorMsg;
-
-        AuthError(String errorCode, String errorMsg) {
-            this.errorCode = errorCode;
-            this.errorMsg = errorMsg;
         }
     }
 }
