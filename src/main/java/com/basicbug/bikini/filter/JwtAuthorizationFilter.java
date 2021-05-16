@@ -10,6 +10,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 @Slf4j
@@ -27,20 +29,10 @@ public class JwtAuthorizationFilter extends GenericFilterBean {
         String token = ((HttpServletRequest) servletRequest).getHeader(REQUEST_TOKEN_HEADER_NAME);
 
         if (jwtTokenProvider.isValidToken(token)) {
-
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-    }
 
-//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-//        throws IOException, ServletException {
-//
-//        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-//        if (header == null || !header.startsWith(CommonConstants.TOKEN_PREFIX)) {
-//            UserPrincipal userPrincipal = new UserPrincipal(new User("", RandomString.make(10), AuthConstants.UNKNOWN_USER));
-//            Authentication auth = new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
-//            SecurityContextHolder.getContext().setAuthentication(auth);
-//        }
-//
-//        chain.doFilter(request, response);
-//    }
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
 }

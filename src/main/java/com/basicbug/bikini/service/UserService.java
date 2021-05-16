@@ -11,14 +11,11 @@ import com.basicbug.bikini.util.JwtTokenProvider;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
 
@@ -66,10 +63,5 @@ public class UserService implements UserDetailsService {
 
     private String getJwtToken(User user) {
         return jwtTokenProvider.generateToken(user.getUid(), user.getRoles());
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
-        return userRepository.findByUid(userPk).orElseThrow(() -> new UsernameNotFoundException("user is not found"));
     }
 }
