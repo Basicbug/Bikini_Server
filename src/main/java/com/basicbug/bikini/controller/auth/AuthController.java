@@ -50,7 +50,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<String> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
         AuthProvider authProvider = AuthProvider.of(provider.toUpperCase());
-        String jwtToken = userService.loadUserInfo(requestDto, authProvider);
+        String jwtToken = userService.checkOrRegisterUser(requestDto, authProvider);
         return CommonResponse.of(jwtToken, HttpStatus.OK.value(), "Success");
     }
 

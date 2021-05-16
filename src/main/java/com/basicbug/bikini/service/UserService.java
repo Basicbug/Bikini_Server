@@ -1,93 +1,75 @@
 package com.basicbug.bikini.service;
 
 import com.basicbug.bikini.dto.auth.AuthRequestDto;
-import com.basicbug.bikini.dto.auth.KakaoProfileResponseDto;
-import com.basicbug.bikini.dto.auth.NaverProfileResponseDto;
-import com.basicbug.bikini.model.AuthConstants;
-import com.basicbug.bikini.model.CommonConstants;
+import com.basicbug.bikini.model.KakaoProfile;
 import com.basicbug.bikini.model.User;
-import com.basicbug.bikini.model.UserPrincipal;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import com.basicbug.bikini.model.auth.NaverProfile;
-import com.basicbug.bikini.model.auth.exception.OAuthProcessException;
+import com.basicbug.bikini.model.auth.exception.InvalidAccessTokenException;
 import com.basicbug.bikini.repository.UserRepository;
 import com.basicbug.bikini.util.JwtTokenProvider;
+import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.utility.RandomString;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final WebClient webClient = WebClient.builder().build();
+    private final KakaoService kakaoService;
+
+    private final NaverService naverService;
 
     // TODO: Refactor to more generic way
-    public String loadUserInfo(AuthRequestDto authRequestDto, AuthProvider provider) {
+    public String checkOrRegisterUser(AuthRequestDto authRequestDto, AuthProvider provider) {
         String accessToken = authRequestDto.getAccessToken();
 
-        if (accessToken.isEmpty()) return "";
+        if (accessToken.isEmpty()) throw new InvalidAccessTokenException("access token should not be empty");
 
-        String profileUrl = "";
         if (provider == AuthProvider.KAKAO) {
-            profileUrl = "https://kapi.kakao.com/v2/user/me";
-        } else {
-            profileUrl = "https://openapi.naver.com/v1/nid/me";
+            KakaoProfile profile = kakaoService.getProfile(accessToken);
+            Optional<User> userOptional = userRepository.findByUid(profile.getId());
+            User user = userOptional.orElseGet(() ->
+                registerUserAndGet(profile.getId(), profile.getProperties().getNickName(), AuthProvider.KAKAO)
+            );
+            return getJwtToken(user);
+        } else if (provider == AuthProvider.NAVER) {
+            NaverProfile profile = naverService.getProfile(accessToken);
+            Optional<User> userOptional = userRepository.findByUid(profile.getId());
+            User user = userOptional.orElseGet(() ->
+                registerUserAndGet(profile.getId(), profile.getNickname(), AuthProvider.NAVER)
+            );
+            return getJwtToken(user);
         }
 
-        WebClient.ResponseSpec spec = webClient.get().uri(profileUrl)
-            .header(HttpHeaders.AUTHORIZATION, getAuthorization(accessToken))
-            .retrieve()
-            .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
-                throw new OAuthProcessException("Fail to get profile");
-            });
-
-        return requestProfileAndGetJwtToken(provider, spec);
+        throw new InvalidAccessTokenException("fail to get user profile");
     }
 
-    private String requestProfileAndGetJwtToken(AuthProvider provider, WebClient.ResponseSpec spec) {
-        String email = "";
-
-        try {
-            if (provider == AuthProvider.KAKAO) {
-                KakaoProfileResponseDto response = spec.bodyToMono(KakaoProfileResponseDto.class).block();
-                if (response != null) {
-                    Long id = response.getId();
-                    email = id + "@kakao.com";
-                }
-            } else {
-                NaverProfileResponseDto response = spec.bodyToMono(NaverProfileResponseDto.class).block();
-                if (response != null) {
-                    NaverProfile profile = response.getResponse();
-                    email = profile.getId() + "@naver.com";
-                }
-            }
-        } catch (OAuthProcessException ex) {
-            email = "";
-        }
-
-        if (email.isEmpty()) return "";
-
-        final Optional<User> userOptional = userRepository.findUserByEmail(email);
-        final String targetEmail = email;
-        final User user = userOptional.orElseGet(() -> new User(targetEmail, new RandomString(10).nextString(), AuthConstants.NORMAL_USER));
-
-        if (!userOptional.isPresent()) {
-            userRepository.save(user);
-        }
-
-        return jwtTokenProvider.generateToken(new UserPrincipal(user));
+    private User registerUserAndGet(String uid, String name, AuthProvider provider) {
+        return userRepository.save(
+            User.builder()
+                .uid(uid)
+                .name(name)
+                .provider(provider)
+                .roles(Collections.singletonList("ROLE_USER"))
+                .build()
+        );
     }
 
-    private String getAuthorization(String accessToken) {
-        return CommonConstants.TOKEN_PREFIX + accessToken;
+    private String getJwtToken(User user) {
+        return jwtTokenProvider.generateToken(user.getUid(), user.getRoles());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
+        return userRepository.findByUid(userPk).orElseThrow(() -> new UsernameNotFoundException("user is not found"));
     }
 }

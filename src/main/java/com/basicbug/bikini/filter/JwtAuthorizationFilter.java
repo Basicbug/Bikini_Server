@@ -1,41 +1,46 @@
 package com.basicbug.bikini.filter;
 
-import com.basicbug.bikini.model.AuthConstants;
-import com.basicbug.bikini.model.CommonConstants;
-import com.basicbug.bikini.model.User;
-import com.basicbug.bikini.model.UserPrincipal;
+import static com.basicbug.bikini.model.CommonConstants.REQUEST_TOKEN_HEADER_NAME;
+
+import com.basicbug.bikini.util.JwtTokenProvider;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.utility.RandomString;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.filter.GenericFilterBean;
 
 @Slf4j
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+public class JwtAuthorizationFilter extends GenericFilterBean {
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public JwtAuthorizationFilter(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
         throws IOException, ServletException {
+        String token = ((HttpServletRequest) servletRequest).getHeader(REQUEST_TOKEN_HEADER_NAME);
 
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || !header.startsWith(CommonConstants.TOKEN_PREFIX)) {
-            UserPrincipal userPrincipal = new UserPrincipal(new User("", RandomString.make(10), AuthConstants.UNKNOWN_USER));
-            Authentication auth = new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        if (jwtTokenProvider.isValidToken(token)) {
+
         }
-
-        chain.doFilter(request, response);
     }
+
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+//        throws IOException, ServletException {
+//
+//        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+//        if (header == null || !header.startsWith(CommonConstants.TOKEN_PREFIX)) {
+//            UserPrincipal userPrincipal = new UserPrincipal(new User("", RandomString.make(10), AuthConstants.UNKNOWN_USER));
+//            Authentication auth = new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
+//            SecurityContextHolder.getContext().setAuthentication(auth);
+//        }
+//
+//        chain.doFilter(request, response);
+//    }
 }

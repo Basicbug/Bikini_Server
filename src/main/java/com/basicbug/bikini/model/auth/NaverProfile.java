@@ -13,4 +13,8 @@ public class NaverProfile {
     private String id;
     private String name;
     private String birthday;
+
+    public String getId() {
+        return "naver-" + id;
+    }
 }
