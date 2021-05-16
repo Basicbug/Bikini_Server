@@ -9,6 +9,8 @@ import com.basicbug.bikini.dto.feed.FeedListResponse;
 import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.service.FeedService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -95,6 +97,16 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getNearLocationFeedList(FeedNearLocationRequestDto feedNearLocationRequestDto) {
         FeedListResponse feedListResponse = feedService.getNearByFeedList(feedNearLocationRequestDto);
+        return CommonResponse.of(feedListResponse);
+    }
+
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
+    })
+    @GetMapping("/list/me")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<FeedListResponse> getMyFeedList() {
+        FeedListResponse feedListResponse = feedService.getAllFeedResponseList();
         return CommonResponse.of(feedListResponse);
     }
 
