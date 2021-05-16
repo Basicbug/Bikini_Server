@@ -21,7 +21,7 @@ public class KakaoProfile {
     @Getter
     @Setter
     public static class Properties {
-        private String nickname;
+        private String nickname = "Unknown-kakao";
 
         public String getNickName() {
             return nickname;

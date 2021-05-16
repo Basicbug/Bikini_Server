@@ -1,6 +1,7 @@
 package com.basicbug.bikini.service;
 
 import com.basicbug.bikini.config.auth.NaverAuthConfig;
+import com.basicbug.bikini.dto.auth.NaverProfileResponseDto;
 import com.basicbug.bikini.model.CommonConstants;
 import com.basicbug.bikini.model.auth.NaverProfile;
 import com.basicbug.bikini.model.auth.exception.OAuthProcessException;
@@ -27,10 +28,10 @@ public class NaverService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(null, headers);
         try {
-            ResponseEntity<NaverProfile> response = restTemplate
-                .postForEntity(authConfig.getProfileUrl(), request, NaverProfile.class);
+            ResponseEntity<NaverProfileResponseDto> response = restTemplate
+                .postForEntity(authConfig.getProfileUrl(), request, NaverProfileResponseDto.class);
             if (response.getStatusCode().is2xxSuccessful()) {
-                return response.getBody();
+                return response.getBody().getResponse();
             }
         } catch (Exception e) {
             throw new OAuthProcessException("Naver profile request fail");
