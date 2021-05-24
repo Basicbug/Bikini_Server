@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+  <timestamp key="BY_DATE" datePattern="yyyy-MM-dd" />
+  <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} %msg%n" />
+  <property name="MAX_HISTORY" value="7" />
+  <property name="LOG_DIR" value="./logs" />
+  <property name="LOG_FILE_NAME" value="bikini" />
+  <property name="LOG_BACKUP" value="./logs/backup" />
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_DIR}/${LOG_FILE_NAME}-${BY_DATE}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_BACKUP}/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.zip</fileNamePattern>
+      <maxHistory>${MAX_HISTORY}</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+  <springProfile name="prod">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE" />
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+</configuration>
