@@ -9,7 +9,10 @@ import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.FeedImage;
 import com.basicbug.bikini.model.Point;
+import com.basicbug.bikini.model.User;
+import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
 import com.basicbug.bikini.repository.FeedRepository;
+import com.basicbug.bikini.repository.UserRepository;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FeedService {
 
     private final FeedRepository feedRepository;
+    private final UserRepository userRepository;
     private final ImageService imageService;
 
     /**
@@ -92,11 +96,13 @@ public class FeedService {
      * Save Feed information to database
      *
      * @param feedCreateRequestDto FeedDto that has feed information to be saved
+     * @param uid uid of user that posts this feed
      */
     @Transactional
-    public void createFeed(FeedCreateRequestDto feedCreateRequestDto) {
+    public void createFeed(FeedCreateRequestDto feedCreateRequestDto, String uid) {
         final List<FeedImage> feedImages = imageService.findAllFeedImageByIds(feedCreateRequestDto.getImageIds());
-        final Feed feed = createFeedByRequest(feedCreateRequestDto, feedImages);
+        final User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
+        final Feed feed = createFeedByRequest(feedCreateRequestDto, feedImages, user);
         feedImages.forEach(feedImage -> feedImage.setFeed(feed));
         feedRepository.save(feed);
     }
@@ -136,11 +142,11 @@ public class FeedService {
         feedRepository.deleteAll();
     }
 
-    private Feed createFeedByRequest(FeedCreateRequestDto createRequestDto, List<FeedImage> feedImages) {
+    private Feed createFeedByRequest(FeedCreateRequestDto createRequestDto, List<FeedImage> feedImages, User user) {
         return Feed.builder()
             .feedId(UUID.randomUUID())
             .feedNumOfUser(createRequestDto.getFeedNumOfUser())
-            .userId(createRequestDto.getUserId())
+            .userId(user.getName())
             .content(createRequestDto.getContent())
             .images(feedImages)
             .imageUrl(createRequestDto.getImageUrl())
