@@ -16,6 +16,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,11 +39,15 @@ public class FeedController {
     private final FeedService feedService;
     private static final String FEED_IMAGE_DIR = "feed";
 
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", dataType = "String", paramType = "header")
     @ApiOperation(value = "Add feed", notes = "Feed 정보 추가")
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<Void> addFeed(@RequestBody FeedCreateRequestDto feedCreateRequestDto) {
-        feedService.createFeed(feedCreateRequestDto);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = authentication.getName();
+        log.info("add feed uid : {}", uid);
+        feedService.createFeed(feedCreateRequestDto, uid);
         return CommonResponse.empty();
     }
 
