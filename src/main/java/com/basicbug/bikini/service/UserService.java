@@ -1,17 +1,20 @@
 package com.basicbug.bikini.service;
 
+import com.basicbug.bikini.dto.user.UserUpdateRequestDto;
 import com.basicbug.bikini.dto.auth.AuthRequestDto;
 import com.basicbug.bikini.model.KakaoProfile;
 import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import com.basicbug.bikini.model.auth.NaverProfile;
 import com.basicbug.bikini.model.auth.exception.InvalidAccessTokenException;
+import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
 import com.basicbug.bikini.repository.UserRepository;
 import com.basicbug.bikini.util.JwtTokenProvider;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,20 @@ public class UserService {
     private final KakaoService kakaoService;
 
     private final NaverService naverService;
+
+    public User getUserInformation(String uid) {
+        return userRepository.findByUid(uid)
+            .orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
+    }
+
+    @Transactional
+    public void updateUserInfo(String uid, UserUpdateRequestDto userUpdateRequestDto) {
+        User newUser = new User();
+        newUser.setNickname(userUpdateRequestDto.getNickname());
+        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
+        user.updateUserInfo(newUser);
+        userRepository.save(user);
+    }
 
     // TODO: Refactor to more generic way
     public String checkOrRegisterUser(AuthRequestDto authRequestDto, AuthProvider provider) {
@@ -50,11 +67,11 @@ public class UserService {
         throw new InvalidAccessTokenException("fail to get user profile");
     }
 
-    private User registerUserAndGet(String uid, String name, AuthProvider provider) {
+    private User registerUserAndGet(String uid, String nickname, AuthProvider provider) {
         return userRepository.save(
             User.builder()
                 .uid(uid)
-                .name(name)
+                .nickname(nickname)
                 .provider(provider)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build()

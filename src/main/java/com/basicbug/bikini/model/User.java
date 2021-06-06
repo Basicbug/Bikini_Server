@@ -1,5 +1,6 @@
 package com.basicbug.bikini.model;
 
+import com.basicbug.bikini.dto.user.UserResponseDto;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
@@ -32,7 +35,7 @@ public class User extends BaseEntity implements UserDetails {
     private String uid;
 
     @Column(nullable = true, length = 100)
-    private String name;
+    private String nickname;
 
     @Column(length = 100)
     private String password;
@@ -72,5 +75,15 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void updateUserInfo(User newUser) {
+        this.nickname = newUser.getNickname();
+    }
+
+    public UserResponseDto toDto() {
+        return UserResponseDto.builder()
+            .nickname(this.nickname)
+            .build();
     }
 }
