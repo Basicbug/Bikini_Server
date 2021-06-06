@@ -4,6 +4,7 @@ import com.basicbug.bikini.dto.user.UserResponseDto;
 import com.basicbug.bikini.dto.user.UserUpdateRequestDto;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.service.UserService;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", dataType = "String", paramType = "header")
     @ApiOperation(value = "Get user profile", notes = "요청 사용자 정보")
     @GetMapping("/about/me")
     @ResponseStatus(HttpStatus.OK)
@@ -35,6 +37,7 @@ public class UserController {
         return CommonResponse.of(userService.getUserInformation(uid).toDto());
     }
 
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", dataType = "String", paramType = "header")
     @ApiOperation(value = "Update user info", notes = "사용자 정보 업데이트")
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)

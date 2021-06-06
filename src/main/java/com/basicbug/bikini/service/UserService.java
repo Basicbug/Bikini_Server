@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +33,13 @@ public class UserService {
             .orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
     }
 
+    @Transactional
     public void updateUserInfo(String uid, UserUpdateRequestDto userUpdateRequestDto) {
         User newUser = new User();
         newUser.setNickname(userUpdateRequestDto.getNickname());
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
         user.updateUserInfo(newUser);
+        userRepository.save(user);
     }
 
     // TODO: Refactor to more generic way
