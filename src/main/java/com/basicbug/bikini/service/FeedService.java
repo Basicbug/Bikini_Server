@@ -146,7 +146,7 @@ public class FeedService {
         return Feed.builder()
             .feedId(UUID.randomUUID())
             .feedNumOfUser(createRequestDto.getFeedNumOfUser())
-            .userId(user.getName())
+            .userId(user.getNickname())
             .content(createRequestDto.getContent())
             .images(feedImages)
             .imageUrl(createRequestDto.getImageUrl())
