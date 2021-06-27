@@ -39,10 +39,6 @@ public class Feed extends BaseEntity {
 
     private int feedNumOfUser;
 
-    private int countOfGroupFeed;
-
-    private long numOfLikes;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -59,8 +55,6 @@ public class Feed extends BaseEntity {
 
     public void update(Feed newFeed) {
         this.feedNumOfUser = newFeed.feedNumOfUser;
-        this.countOfGroupFeed = newFeed.countOfGroupFeed;
-        this.numOfLikes = newFeed.numOfLikes;
         this.content = newFeed.content;
         this.imageUrl = newFeed.imageUrl;
         this.location = newFeed.location;
@@ -73,8 +67,6 @@ public class Feed extends BaseEntity {
             .username(user.getUsername())
             .content(content)
             .imageUrl(images.stream().map(FeedImage::getUrl).collect(Collectors.toList()))
-            .countOfGroupFeed(countOfGroupFeed)
-            .numOfLikes(numOfLikes)
             .location(location)
             .build();
     }
@@ -84,7 +76,6 @@ public class Feed extends BaseEntity {
             .feedNumOfUser(feedNumOfUser)
             .content(content)
             .imageUrl(imageUrl)
-            .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();
     }

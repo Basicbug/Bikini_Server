@@ -21,7 +21,6 @@ public class FeedUpdateRequestDto {
     private String content;
     private String imageUrl;
     private String profileImageUrl;
-    private Integer countOfGroupFeed;
     @JsonProperty("locationInfo")
     private Location location;
 
@@ -31,7 +30,6 @@ public class FeedUpdateRequestDto {
             .feedNumOfUser(feedNumOfUser)
             .content(content)
             .imageUrl(imageUrl)
-            .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();
     }

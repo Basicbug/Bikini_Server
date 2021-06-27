@@ -23,8 +23,6 @@ public class FeedResponse {
     private String username;
     private String content;
     private List<String> imageUrl;
-    private Integer countOfGroupFeed;
-    private Long numOfLikes;
     @JsonProperty("locationInfo")
     private Location location;
 
@@ -32,7 +30,6 @@ public class FeedResponse {
         return Feed.builder()
             .feedNumOfUser(feedNumOfUser)
             .content(content)
-            .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();
     }

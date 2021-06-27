@@ -22,7 +22,6 @@ public class FeedCreateRequestDto {
     private String content;
     private String imageUrl;
     private List<Long> imageIds;
-    private Integer countOfGroupFeed;
     @JsonProperty("locationInfo")
     private Location location;
 
@@ -32,7 +31,6 @@ public class FeedCreateRequestDto {
             .feedNumOfUser(feedNumOfUser)
             .content(content)
             .imageUrl(imageUrl)
-            .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();
     }
@@ -40,7 +38,6 @@ public class FeedCreateRequestDto {
     @Override
     public String toString() {
         return "FeedRequestDto(feedNumOfUser=" + feedNumOfUser + ", content="
-            + content + ", imageUrl=" + imageUrl + ", countOfGroupFeed=" + countOfGroupFeed + ", location=" + location
-            + ")";
+            + content + ", imageUrl=" + imageUrl + ", location=" + location + ")";
     }
 }

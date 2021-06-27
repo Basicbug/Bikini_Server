@@ -67,13 +67,13 @@ public class FeedService {
      * @param limit 반환할 피드의 수
      * @return numOfLikes 로 정렬한 피드 중 상위 limit 개의 리스트
      */
-    public FeedListResponse getMostLikesFeedList(int limit) {
-        Pageable pageable = PageRequest.of(0, limit, Sort.by("numOfLikes").descending());
-        return new FeedListResponse(feedRepository.findAll(pageable)
-            .stream()
-            .map(Feed::toResponseDto)
-            .collect(Collectors.toList()));
-    }
+//    public FeedListResponse getMostLikesFeedList(int limit) {
+//        Pageable pageable = PageRequest.of(0, limit, Sort.by("numOfLikes").descending());
+//        return new FeedListResponse(feedRepository.findAll(pageable)
+//            .stream()
+//            .map(Feed::toResponseDto)
+//            .collect(Collectors.toList()));
+//    }
 
     /**
      * Get feed lists that posted near by specified location
@@ -150,7 +150,6 @@ public class FeedService {
             .content(createRequestDto.getContent())
             .images(feedImages)
             .imageUrl(createRequestDto.getImageUrl())
-            .countOfGroupFeed(createRequestDto.getCountOfGroupFeed())
             .location(createRequestDto.getLocation())
             .build();
     }

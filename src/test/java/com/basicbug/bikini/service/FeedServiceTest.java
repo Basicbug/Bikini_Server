@@ -33,7 +33,6 @@ class FeedServiceTest {
     private final String TEST_USER_ID = "TEST_USER";
     private final String TEST_CONTENT = "TEST_CONTENT";
     private final String TEST_IMAGE_URL = "TEST_IMAGE_URL";
-    private final String TEST_PROFILE_IMAGE_URL = "TEST_PROFILE_IMAGE_URL";
     private final int TEST_COUNT_OF_GROUP_FEED = 0;
     private final Location TEST_LOCATION = new Location();
     private final Feed TEST_FEED = Feed.builder().feedId(TEST_UUID).build();
@@ -65,8 +64,6 @@ class FeedServiceTest {
             .userId(TEST_USER_ID)
             .content(newContent)
             .imageUrl(TEST_IMAGE_URL)
-            .profileImageUrl(TEST_PROFILE_IMAGE_URL)
-            .countOfGroupFeed(TEST_COUNT_OF_GROUP_FEED)
             .location(TEST_LOCATION)
             .build();
 
