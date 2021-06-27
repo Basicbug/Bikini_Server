@@ -4,6 +4,7 @@ import com.basicbug.bikini.config.auth.AuthConfig;
 import com.basicbug.bikini.config.auth.KakaoAuthConfig;
 import com.basicbug.bikini.config.auth.NaverAuthConfig;
 import com.basicbug.bikini.dto.auth.AuthRequestDto;
+import com.basicbug.bikini.dto.auth.JwtTokenResponseDto;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import com.basicbug.bikini.model.auth.KakaoAuth;
@@ -48,10 +49,10 @@ public class AuthController {
 
     @GetMapping("/login/{provider}")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<String> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
+    public CommonResponse<JwtTokenResponseDto> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
         AuthProvider authProvider = AuthProvider.of(provider.toUpperCase());
         String jwtToken = userService.checkOrRegisterUser(requestDto, authProvider);
-        return CommonResponse.of(jwtToken, HttpStatus.OK.value(), "Success");
+        return CommonResponse.of(new JwtTokenResponseDto(jwtToken), HttpStatus.OK.value(), "Success");
     }
 
     @ApiIgnore

@@ -12,19 +12,10 @@ import lombok.Setter;
 public class KakaoProfile {
 
     private Long id;
-    private Properties properties;
+    private String username = "Unknown-kakao";
 
     public String getId() {
         return "kakao-" + id;
     }
 
-    @Getter
-    @Setter
-    public static class Properties {
-        private String nickname = "Unknown-kakao";
-
-        public String getNickName() {
-            return nickname;
-        }
-    }
 }

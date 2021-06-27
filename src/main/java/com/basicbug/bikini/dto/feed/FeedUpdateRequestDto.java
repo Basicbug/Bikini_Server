@@ -29,10 +29,8 @@ public class FeedUpdateRequestDto {
         return Feed.builder()
             .feedId(UUID.fromString(feedId))
             .feedNumOfUser(feedNumOfUser)
-            .userId(userId)
             .content(content)
             .imageUrl(imageUrl)
-            .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();

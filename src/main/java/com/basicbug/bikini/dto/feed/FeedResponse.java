@@ -20,10 +20,9 @@ public class FeedResponse {
 
     private UUID feedId;
     private Integer feedNumOfUser;
-    private String userId;
+    private String username;
     private String content;
     private List<String> imageUrl;
-    private String profileImageUrl;
     private Integer countOfGroupFeed;
     private Long numOfLikes;
     @JsonProperty("locationInfo")
@@ -32,9 +31,7 @@ public class FeedResponse {
     public Feed toEntity() {
         return Feed.builder()
             .feedNumOfUser(feedNumOfUser)
-            .userId(userId)
             .content(content)
-            .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();

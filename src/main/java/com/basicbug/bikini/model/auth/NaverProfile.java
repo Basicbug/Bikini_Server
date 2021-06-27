@@ -12,7 +12,7 @@ import lombok.Setter;
 public class NaverProfile {
 
     private String email;
-    private String nickname = "Unknown-naver";
+    private String username = "Unknown-naver";
     private String profile_image;
     private String age;
     private String gender;

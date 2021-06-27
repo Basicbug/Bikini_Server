@@ -1,14 +1,12 @@
-package com.basicbug.bikini.dto.user;
+package com.basicbug.bikini.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateRequestDto {
-    private String username;
+public class JwtTokenResponseDto {
+    private String token;
 }

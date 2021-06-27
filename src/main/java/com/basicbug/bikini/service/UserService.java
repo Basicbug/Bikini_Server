@@ -1,7 +1,7 @@
 package com.basicbug.bikini.service;
 
-import com.basicbug.bikini.dto.user.UserUpdateRequestDto;
 import com.basicbug.bikini.dto.auth.AuthRequestDto;
+import com.basicbug.bikini.dto.user.UserUpdateRequestDto;
 import com.basicbug.bikini.model.KakaoProfile;
 import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.AuthProvider;
@@ -36,7 +36,7 @@ public class UserService {
     @Transactional
     public void updateUserInfo(String uid, UserUpdateRequestDto userUpdateRequestDto) {
         User newUser = new User();
-        newUser.setNickname(userUpdateRequestDto.getNickname());
+        newUser.setUid(userUpdateRequestDto.getUsername());
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
         user.updateUserInfo(newUser);
         userRepository.save(user);
@@ -52,14 +52,14 @@ public class UserService {
             KakaoProfile profile = kakaoService.getProfile(accessToken);
             Optional<User> userOptional = userRepository.findByUid(profile.getId());
             User user = userOptional.orElseGet(() ->
-                registerUserAndGet(profile.getId(), profile.getProperties().getNickName(), AuthProvider.KAKAO)
+                registerUserAndGet(profile.getId(), AuthProvider.KAKAO)
             );
             return getJwtToken(user);
         } else if (provider == AuthProvider.NAVER) {
             NaverProfile profile = naverService.getProfile(accessToken);
             Optional<User> userOptional = userRepository.findByUid(profile.getId());
             User user = userOptional.orElseGet(() ->
-                registerUserAndGet(profile.getId(), profile.getNickname(), AuthProvider.NAVER)
+                registerUserAndGet(profile.getId(), AuthProvider.NAVER)
             );
             return getJwtToken(user);
         }
@@ -67,11 +67,10 @@ public class UserService {
         throw new InvalidAccessTokenException("fail to get user profile");
     }
 
-    private User registerUserAndGet(String uid, String nickname, AuthProvider provider) {
+    private User registerUserAndGet(String uid, AuthProvider provider) {
         return userRepository.save(
             User.builder()
                 .uid(uid)
-                .nickname(nickname)
                 .provider(provider)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build()

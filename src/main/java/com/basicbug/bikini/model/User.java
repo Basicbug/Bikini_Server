@@ -34,9 +34,6 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true, length = 50)
     private String uid;
 
-    @Column(nullable = true, length = 100)
-    private String nickname;
-
     @Column(length = 100)
     private String password;
 
@@ -46,6 +43,9 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AuthProvider provider;
+
+    @Column(nullable = true)
+    private String profileUrl;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -78,12 +78,12 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     public void updateUserInfo(User newUser) {
-        this.nickname = newUser.getNickname();
+        this.uid = newUser.getUsername();
     }
 
     public UserResponseDto toDto() {
         return UserResponseDto.builder()
-            .nickname(this.nickname)
+            .username(this.uid)
             .build();
     }
 }

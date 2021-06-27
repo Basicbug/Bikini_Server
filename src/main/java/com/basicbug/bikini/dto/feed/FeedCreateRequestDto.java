@@ -19,11 +19,9 @@ import lombok.Setter;
 public class FeedCreateRequestDto {
 
     private Integer feedNumOfUser;
-    private String userId;
     private String content;
     private String imageUrl;
     private List<Long> imageIds;
-    private String profileImageUrl;
     private Integer countOfGroupFeed;
     @JsonProperty("locationInfo")
     private Location location;
@@ -32,10 +30,8 @@ public class FeedCreateRequestDto {
         return Feed.builder()
             .feedId(UUID.randomUUID())
             .feedNumOfUser(feedNumOfUser)
-            .userId(userId)
             .content(content)
             .imageUrl(imageUrl)
-            .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();
@@ -43,8 +39,8 @@ public class FeedCreateRequestDto {
 
     @Override
     public String toString() {
-        return "FeedRequestDto(feedNumOfUser=" + feedNumOfUser + ", userId=" + userId + ", content="
-            + content + ", imageUrl=" + imageUrl + ", profileImageUrl=" + profileImageUrl
-            + ", countOfGroupFeed=" + countOfGroupFeed + ", location=" + location + ")";
+        return "FeedRequestDto(feedNumOfUser=" + feedNumOfUser + ", content="
+            + content + ", imageUrl=" + imageUrl + ", countOfGroupFeed=" + countOfGroupFeed + ", location=" + location
+            + ")";
     }
 }

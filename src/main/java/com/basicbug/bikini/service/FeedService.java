@@ -56,7 +56,7 @@ public class FeedService {
         // TODO:  Filter 를 쿼리 단에서 하는 게 좋은가 아니면 데이터를 꺼낸 뒤 수행하는 것이 좋은가?
         return new FeedListResponse(feedRepository.findAll()
             .stream()
-            .filter(it -> it.getUserId().equals(userId))
+            .filter(it -> it.getUser().getUid().equals(userId))
             .map(Feed::toResponseDto)
             .collect(Collectors.toList()));
     }
@@ -146,11 +146,10 @@ public class FeedService {
         return Feed.builder()
             .feedId(UUID.randomUUID())
             .feedNumOfUser(createRequestDto.getFeedNumOfUser())
-            .userId(user.getNickname())
+            .user(user)
             .content(createRequestDto.getContent())
             .images(feedImages)
             .imageUrl(createRequestDto.getImageUrl())
-            .profileImageUrl(createRequestDto.getProfileImageUrl())
             .countOfGroupFeed(createRequestDto.getCountOfGroupFeed())
             .location(createRequestDto.getLocation())
             .build();

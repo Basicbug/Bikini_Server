@@ -12,7 +12,8 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +43,9 @@ public class Feed extends BaseEntity {
 
     private long numOfLikes;
 
-    private String userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String content;
 
@@ -51,8 +54,6 @@ public class Feed extends BaseEntity {
     @OneToMany(mappedBy = "feed", cascade = CascadeType.PERSIST)
     private List<FeedImage> images = new ArrayList<>();
 
-    private String profileImageUrl;
-
     @Embedded
     private Location location;
 
@@ -60,10 +61,8 @@ public class Feed extends BaseEntity {
         this.feedNumOfUser = newFeed.feedNumOfUser;
         this.countOfGroupFeed = newFeed.countOfGroupFeed;
         this.numOfLikes = newFeed.numOfLikes;
-        this.userId = newFeed.userId;
         this.content = newFeed.content;
         this.imageUrl = newFeed.imageUrl;
-        this.profileImageUrl = newFeed.profileImageUrl;
         this.location = newFeed.location;
     }
 
@@ -71,10 +70,9 @@ public class Feed extends BaseEntity {
         return FeedResponse.builder()
             .feedId(feedId)
             .feedNumOfUser(feedNumOfUser)
-            .userId(userId)
+            .username(user.getUsername())
             .content(content)
             .imageUrl(images.stream().map(FeedImage::getUrl).collect(Collectors.toList()))
-            .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .numOfLikes(numOfLikes)
             .location(location)
@@ -84,10 +82,8 @@ public class Feed extends BaseEntity {
     public FeedCreateRequestDto toRequestDto() {
         return FeedCreateRequestDto.builder()
             .feedNumOfUser(feedNumOfUser)
-            .userId(userId)
             .content(content)
             .imageUrl(imageUrl)
-            .profileImageUrl(profileImageUrl)
             .countOfGroupFeed(countOfGroupFeed)
             .location(location)
             .build();
