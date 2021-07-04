@@ -33,7 +33,7 @@ public class Feed extends BaseEntity {
 
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
-    @Column(columnDefinition = "VARCHAR(36)")
+    @Column(columnDefinition = "VARCHAR(36)", nullable = false)
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID feedId = UUID.randomUUID();
 

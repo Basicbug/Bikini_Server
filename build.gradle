@@ -54,6 +54,9 @@ dependencies {
     // MySQL
     runtimeOnly 'mysql:mysql-connector-java'
 
+    // Maria DB
+    implementation "org.mariadb.jdbc:mariadb-java-client"
+
     // Lombok
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
