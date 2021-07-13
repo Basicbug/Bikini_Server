@@ -13,14 +13,13 @@ import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
 import com.basicbug.bikini.repository.FeedRepository;
 import com.basicbug.bikini.repository.UserRepository;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +31,7 @@ public class FeedService {
 
     private final FeedRepository feedRepository;
     private final UserRepository userRepository;
+    private final LikesService likesService;
     private final ImageService imageService;
 
     /**
@@ -62,18 +62,45 @@ public class FeedService {
     }
 
     /**
-     * numOfLikes 로 정렬 시 상위 limit 개의 피드를 반환한다.
+     * Likes 로 정렬 시 상위 limit 개의 피드를 반환한다.
      *
      * @param limit 반환할 피드의 수
-     * @return numOfLikes 로 정렬한 피드 중 상위 limit 개의 리스트
+     * @return Likes 로 정렬한 피드 중 상위 limit 개의 리스트
      */
-//    public FeedListResponse getMostLikesFeedList(int limit) {
-//        Pageable pageable = PageRequest.of(0, limit, Sort.by("numOfLikes").descending());
-//        return new FeedListResponse(feedRepository.findAll(pageable)
-//            .stream()
-//            .map(Feed::toResponseDto)
-//            .collect(Collectors.toList()));
-//    }
+    public FeedListResponse getMostLikesFeedList(int limit) {
+        List<Feed> allFeeds = feedRepository.findAll();
+        List<Long> topFeedIds = likesService.getMostLikesFeedIds(limit);
+
+        allFeeds.sort(new Comparator<Feed>() {
+            @Override
+            public int compare(Feed o1, Feed o2) {
+                if (o1.getModifiedAt().isBefore(o2.getModifiedAt())) {
+                    return -1;
+                } else if (o1.getModifiedAt().isAfter(o2.getModifiedAt())) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+
+        Set<Feed> selectedFeeds = allFeeds
+            .stream()
+            .filter(it -> topFeedIds.contains(it.getId()))
+            .collect(Collectors.toSet());
+
+        for (Feed feed : allFeeds) {
+            if (selectedFeeds.contains(feed)) continue;
+            selectedFeeds.add(feed);
+            if (selectedFeeds.size() >= limit) break;
+        }
+
+        return new FeedListResponse(selectedFeeds
+            .stream()
+            .map(Feed::toResponseDto)
+            .collect(Collectors.toList())
+        );
+    }
 
     /**
      * Get feed lists that posted near by specified location
