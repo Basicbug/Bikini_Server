@@ -68,6 +68,7 @@ public class Feed extends BaseEntity {
             .content(content)
             .imageUrl(images.stream().map(FeedImage::getUrl).collect(Collectors.toList()))
             .location(location)
+            .modifiedAt(getModifiedAt())
             .build();
     }
 
