@@ -16,11 +16,11 @@ echo "Build Start ..."
 
 echo "Copy Build Result ..."
 
-cp ./build/libs/*.jar $REPOSIOTRY/deploy/
+cp ./build/libs/*.jar $WORKSPACE/deploy/
 
 echo "Check running application pid"
 
-CURRENT_PID = $(pgrep -f $PROJECT_NAME.*.jar)
+CURRENT_PID=$(pgrep -f $PROJECT_NAME.*.jar)
 
 echo "Current running application pid is : $CURRENT_PID"
 
@@ -34,8 +34,8 @@ fi
 
 echo "Deploy application"
 
-JAR_NAME = $(ls $REPOSITORY/deploy/ | grep $PROJECT_NAME | tail -n 1)
+JAR_NAME=$(ls $WORKSPACE/deploy/ | grep $PROJECT_NAME | tail -n 1)
 
 echo "Jar file name : $JAR_NAME"
 
-nohup java -jar -Dspring.profiles.active=prod $REPOSIOTRY/deploy/$JAR_NAME &
+nohup java -jar -Dspring.profiles.active=prod $WORKSPACE/deploy/$JAR_NAME &
