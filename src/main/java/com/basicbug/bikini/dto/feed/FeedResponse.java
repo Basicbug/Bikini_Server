@@ -3,6 +3,7 @@ package com.basicbug.bikini.dto.feed;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.Location;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class FeedResponse {
     private List<String> imageUrl;
     @JsonProperty("locationInfo")
     private Location location;
+    private LocalDateTime modifiedAt;
 
     public Feed toEntity() {
         return Feed.builder()
