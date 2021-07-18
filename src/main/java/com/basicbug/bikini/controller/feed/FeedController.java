@@ -67,14 +67,6 @@ public class FeedController {
         return CommonResponse.empty();
     }
 
-    @ApiOperation(value = "Clear feed list", notes = "Feed 리스트 정보 초기화")
-    @GetMapping("/clear")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public CommonResponse<Void> clearFeedList() {
-        feedService.clearFeedList();
-        return CommonResponse.empty();
-    }
-
     @ApiOperation(value = "Get all feed list", notes = "전체 Feed 리스트")
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
