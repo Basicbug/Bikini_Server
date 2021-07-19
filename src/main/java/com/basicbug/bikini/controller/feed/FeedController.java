@@ -8,6 +8,7 @@ import com.basicbug.bikini.dto.feed.FeedImageResponseDto;
 import com.basicbug.bikini.dto.feed.FeedListResponse;
 import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
+import com.basicbug.bikini.dto.feed.LikesRequestDto;
 import com.basicbug.bikini.service.FeedService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -116,5 +116,29 @@ public class FeedController {
         log.info("uploadImage request ${}", images);
         List<FeedImageResponseDto> feedImages = feedService.uploadImages(images, FEED_IMAGE_DIR);
         return CommonResponse.of(feedImages);
+    }
+
+    @ApiOperation(value = "Add likes to Feed", notes = "지정 피드 좋아요 추가")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
+    @PostMapping("/likes")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<Void> addLikesToFeed(LikesRequestDto likesRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = authentication.getName();
+
+        feedService.addLikesToFeed(likesRequestDto.getFeedId(), uid);
+        return CommonResponse.empty();
+    }
+
+    @ApiOperation(value = "Remove likes from Feed", notes = "지정 피드 좋아요 제거")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
+    @DeleteMapping("/likes")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<Void> removeLikesFromFeed(LikesRequestDto likesRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = authentication.getName();
+
+        feedService.removeLikesFromFeed(likesRequestDto.getFeedId(), uid);
+        return CommonResponse.empty();
     }
 }
