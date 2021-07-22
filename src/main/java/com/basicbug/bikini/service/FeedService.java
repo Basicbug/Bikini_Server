@@ -102,6 +102,18 @@ public class FeedService {
         );
     }
 
+    public boolean addLikesToFeed(String feedId, String uid) {
+        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
+        Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
+        return likesService.addLikesToFeed(feed, user);
+    }
+
+    public boolean removeLikesFromFeed(String feedId, String uid) {
+        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
+        Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
+        return likesService.removeLikesFromFeed(feed, user);
+    }
+
     /**
      * Get feed lists that posted near by specified location
      *
