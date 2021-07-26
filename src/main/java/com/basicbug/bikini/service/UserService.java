@@ -7,6 +7,7 @@ import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import com.basicbug.bikini.model.auth.NaverProfile;
 import com.basicbug.bikini.model.auth.exception.InvalidAccessTokenException;
+import com.basicbug.bikini.model.auth.exception.UidAlreadyExistException;
 import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
 import com.basicbug.bikini.repository.UserRepository;
 import com.basicbug.bikini.util.JwtTokenProvider;
@@ -37,9 +38,18 @@ public class UserService {
     public void updateUserInfo(String uid, UserUpdateRequestDto userUpdateRequestDto) {
         User newUser = new User();
         newUser.setUid(userUpdateRequestDto.getUsername());
+
+        if (isExistingUid(newUser.getUid())) {
+            throw new UidAlreadyExistException("uid already exists " + newUser.getUid());
+        }
+
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
         user.updateUserInfo(newUser);
         userRepository.save(user);
+    }
+
+    private boolean isExistingUid(String uid) {
+        return userRepository.findByUid(uid).isPresent();
     }
 
     // TODO: Refactor to more generic way
