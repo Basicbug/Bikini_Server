@@ -1,6 +1,9 @@
 package com.basicbug.bikini.controller.feed;
 
 
+import static com.basicbug.bikini.error.CommonResponseConstant.FAIL_TO_PROCESS;
+import static com.basicbug.bikini.error.CommonResponseConstant.SUCCESS;
+
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.dto.feed.FeedCreateRequestDto;
 import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
@@ -48,7 +51,8 @@ public class FeedController {
         String uid = authentication.getName();
         log.info("add feed uid : {}", uid);
         feedService.createFeed(feedCreateRequestDto, uid);
-        return CommonResponse.empty();
+
+        return CommonResponse.of(SUCCESS);
     }
 
     @ApiOperation(value = "Delete Feed", notes = "Feed 정보 삭제")
@@ -56,7 +60,12 @@ public class FeedController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public CommonResponse<Void> deleteFeed(@RequestBody FeedDeleteRequestDto feedDeleteRequestDto) {
         boolean result = feedService.deleteFeed(feedDeleteRequestDto);
-        return CommonResponse.empty();
+
+        if (result) {
+            return CommonResponse.of(SUCCESS);
+        } else {
+            return CommonResponse.error(FAIL_TO_PROCESS);
+        }
     }
 
     @ApiOperation(value = "Update feed", notes = "Feed 정보 갱신")
@@ -64,7 +73,7 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<Void> updateFeed(@RequestBody FeedUpdateRequestDto feedUpdateRequestDto) {
         feedService.updateFeed(feedUpdateRequestDto);
-        return CommonResponse.empty();
+        return CommonResponse.of(SUCCESS);
     }
 
     @ApiOperation(value = "Get all feed list", notes = "전체 Feed 리스트")
@@ -72,7 +81,7 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getFeedList() {
         FeedListResponse feedListResponse = feedService.getAllFeedResponseList();
-        return CommonResponse.of(feedListResponse);
+        return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
     @ApiOperation(value = "Get top most likes feed list", notes = "좋아요 수 상위 limit 개의 피드 리스트")
@@ -80,7 +89,7 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getTopFeedList(@PathVariable int limit) {
         FeedListResponse feedListResponse = feedService.getMostLikesFeedList(limit);
-        return CommonResponse.of(feedListResponse);
+        return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
     @ApiOperation(value = "Get all feed list of userId", notes = "특정 유저의 Feed list")
@@ -88,7 +97,7 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getFeedListOfUser(@PathVariable String userId) {
         FeedListResponse feedListResponse = feedService.getFeedListOf(userId);
-        return CommonResponse.of(feedListResponse);
+        return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
     @ApiOperation(value = "Get feed list that posted near by specified location")
@@ -96,7 +105,7 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getNearLocationFeedList(FeedNearLocationRequestDto feedNearLocationRequestDto) {
         FeedListResponse feedListResponse = feedService.getNearByFeedList(feedNearLocationRequestDto);
-        return CommonResponse.of(feedListResponse);
+        return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
     @ApiImplicitParams({
@@ -106,7 +115,7 @@ public class FeedController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getMyFeedList() {
         FeedListResponse feedListResponse = feedService.getAllFeedResponseList();
-        return CommonResponse.of(feedListResponse);
+        return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
     @ApiOperation(value = "Upload images", notes = "피드 내 이미지 업로드")
@@ -115,7 +124,7 @@ public class FeedController {
     public CommonResponse<List<FeedImageResponseDto>> uploadImage(List<MultipartFile> images) {
         log.info("uploadImage request ${}", images);
         List<FeedImageResponseDto> feedImages = feedService.uploadImages(images, FEED_IMAGE_DIR);
-        return CommonResponse.of(feedImages);
+        return CommonResponse.of(feedImages, SUCCESS);
     }
 
     @ApiOperation(value = "Add likes to Feed", notes = "지정 피드 좋아요 추가")
@@ -127,7 +136,7 @@ public class FeedController {
         String uid = authentication.getName();
 
         feedService.addLikesToFeed(likesRequestDto.getFeedId(), uid);
-        return CommonResponse.empty();
+        return CommonResponse.of(SUCCESS);
     }
 
     @ApiOperation(value = "Remove likes from Feed", notes = "지정 피드 좋아요 제거")
@@ -139,6 +148,6 @@ public class FeedController {
         String uid = authentication.getName();
 
         feedService.removeLikesFromFeed(likesRequestDto.getFeedId(), uid);
-        return CommonResponse.empty();
+        return CommonResponse.of(SUCCESS);
     }
 }

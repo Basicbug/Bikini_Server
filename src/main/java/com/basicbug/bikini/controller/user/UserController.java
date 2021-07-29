@@ -1,5 +1,8 @@
 package com.basicbug.bikini.controller.user;
 
+import static com.basicbug.bikini.error.CommonResponseConstant.INVALID_REQUEST;
+import static com.basicbug.bikini.error.CommonResponseConstant.SUCCESS;
+
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.dto.user.UserResponseDto;
 import com.basicbug.bikini.dto.user.UserUpdateRequestDto;
@@ -36,24 +39,26 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = authentication.getName();
         log.info("/about/me for ${}", uid);
-        return CommonResponse.of(userService.getUserInformation(uid).toDto());
+        return CommonResponse.of(userService.getUserInformation(uid).toDto(), SUCCESS.getCode());
     }
 
     @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", dataType = "String", paramType = "header")
     @ApiOperation(value = "Update user info", notes = "사용자 정보 업데이트")
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public void updateUserInfo(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+    public CommonResponse<Void> updateUserInfo(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = authentication.getName();
 
         log.info("update user information with ${}", uid);
         userService.updateUserInfo(uid, userUpdateRequestDto);
+
+        return CommonResponse.of(SUCCESS);
     }
 
     @ExceptionHandler(UidAlreadyExistException.class)
     public CommonResponse<String> handleUidAlreadyExists(Exception exception) {
         log.error("Uid is already exists");
-        return CommonResponse.error(3001, "username already exists");
+        return CommonResponse.error(INVALID_REQUEST.getCode(), "username already exists");
     }
 }
