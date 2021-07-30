@@ -1,5 +1,7 @@
 package com.basicbug.bikini.controller.auth;
 
+import static com.basicbug.bikini.error.CommonResponseConstant.SUCCESS;
+
 import com.basicbug.bikini.config.auth.AuthConfig;
 import com.basicbug.bikini.config.auth.KakaoAuthConfig;
 import com.basicbug.bikini.config.auth.NaverAuthConfig;
@@ -52,7 +54,7 @@ public class AuthController {
     public CommonResponse<JwtTokenResponseDto> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
         AuthProvider authProvider = AuthProvider.of(provider.toUpperCase());
         String jwtToken = userService.checkOrRegisterUser(requestDto, authProvider);
-        return CommonResponse.of(new JwtTokenResponseDto(jwtToken), HttpStatus.OK.value(), "Success");
+        return CommonResponse.of(new JwtTokenResponseDto(jwtToken), SUCCESS);
     }
 
     @ApiIgnore

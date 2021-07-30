@@ -1,5 +1,6 @@
 package com.basicbug.bikini.dto.common;
 
+import com.basicbug.bikini.error.CommonResponseConstant;
 import lombok.Getter;
 
 @Getter
@@ -19,6 +20,10 @@ public class CommonResponse<T> {
         return new CommonResponse<>(null, null, null);
     }
 
+    public static <Void> CommonResponse<Void> error(final CommonResponseConstant responseConstant) {
+        return new CommonResponse<>(null, responseConstant.getCode(), responseConstant.getMessage());
+    }
+
     public static <Void> CommonResponse<Void> error(final Integer code) {
         return new CommonResponse<>(null, code, null);
     }
@@ -29,6 +34,14 @@ public class CommonResponse<T> {
 
     public static <T> CommonResponse<T> of(final T result) {
         return new CommonResponse<>(result, null, null);
+    }
+
+    public static <T> CommonResponse<T> of(final CommonResponseConstant responseConstant) {
+        return new CommonResponse<>(null, responseConstant.getCode(), responseConstant.getMessage());
+    }
+
+    public static <T> CommonResponse<T> of(final T result, final CommonResponseConstant responseConstant) {
+        return new CommonResponse<>(result, responseConstant.getCode(), responseConstant.getMessage());
     }
 
     public static <T> CommonResponse<T> of(final T result, final Integer code) {
