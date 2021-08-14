@@ -8,6 +8,7 @@ import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.FeedImage;
+import com.basicbug.bikini.model.Likes;
 import com.basicbug.bikini.model.Point;
 import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
@@ -102,7 +103,7 @@ public class FeedService {
         );
     }
 
-    public boolean addLikesToFeed(String feedId, String uid) {
+    public Likes addLikesToFeed(String feedId, String uid) {
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
         Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
         return likesService.addLikesToFeed(feed, user);
@@ -112,6 +113,12 @@ public class FeedService {
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
         Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
         return likesService.removeLikesFromFeed(feed, user);
+    }
+
+    public Likes getLikesForFeedByUser(String feedId, String uid) {
+        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
+        Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
+        return likesService.getLikesForFeedByUser(feed, user);
     }
 
     /**

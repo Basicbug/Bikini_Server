@@ -20,13 +20,20 @@ public class LikesService {
         return likesRepository.getMostLikesFeedIds(limit);
     }
 
-    public boolean addLikesToFeed(Feed feed, User user) {
-        if (likesRepository.findByFeedAndUser(feed, user) != null) {
+    public Likes addLikesToFeed(Feed feed, User user) {
+        Likes oldLikes = likesRepository.findByFeedAndUser(feed, user);
+
+        if (oldLikes != null) {
             log.info("Already registered likes " + feed.getFeedId());
-            return false;
+            return oldLikes;
         }
-        likesRepository.save(new Likes(feed, user));
-        return true;
+
+        Likes newLikes = new Likes();
+        newLikes.setFeed(feed);
+        newLikes.setUser(user);
+
+        likesRepository.save(newLikes);
+        return newLikes;
     }
 
     public boolean removeLikesFromFeed(Feed feed, User user) {
@@ -39,5 +46,9 @@ public class LikesService {
 
         likesRepository.delete(likes);
         return true;
+    }
+
+    public Likes getLikesForFeedByUser(Feed feed, User user) {
+        return likesRepository.findByFeedAndUser(feed, user);
     }
 }
