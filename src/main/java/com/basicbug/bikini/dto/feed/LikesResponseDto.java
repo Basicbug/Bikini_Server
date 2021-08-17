@@ -1,6 +1,7 @@
 package com.basicbug.bikini.dto.feed;
 
-import com.basicbug.bikini.model.Likes;
+import com.basicbug.bikini.model.likes.Likes;
+import com.basicbug.bikini.model.likes.TargetType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,11 +9,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LikesResponseDto {
 
-    private String feedId;
+    private TargetType targetType;
+    private String targetId;
     private boolean isLiked = false;
 
-    public LikesResponseDto(String feedId, Likes likes) {
-        this.feedId = feedId;
+    public LikesResponseDto(TargetType targetType, String targetId, Likes likes) {
+        this.targetType = targetType;
+        this.targetId = targetId;
         if (likes != null) {
             isLiked = true;
         }

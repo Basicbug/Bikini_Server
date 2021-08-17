@@ -1,5 +1,7 @@
-package com.basicbug.bikini.model;
+package com.basicbug.bikini.model.likes;
 
+import com.basicbug.bikini.model.BaseEntity;
+import com.basicbug.bikini.model.User;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,11 +31,17 @@ public class Likes extends BaseEntity {
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "feed_id")
-    private Feed feed;
+    private TargetType targetType;
+
+    private String targetId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Likes(TargetType targetType, String targetId, User user) {
+        this.targetType = targetType;
+        this.targetId = targetId;
+        this.user = user;
+    }
 }

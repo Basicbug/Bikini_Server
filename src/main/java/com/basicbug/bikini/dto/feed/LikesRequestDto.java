@@ -1,5 +1,6 @@
 package com.basicbug.bikini.dto.feed;
 
+import com.basicbug.bikini.model.likes.TargetType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,5 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LikesRequestDto {
 
-    String feedId;
+    TargetType targetType;
+    String targetId;
 }

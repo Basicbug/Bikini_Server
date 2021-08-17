@@ -1,9 +1,11 @@
 package com.basicbug.bikini.service;
 
-import com.basicbug.bikini.model.Feed;
-import com.basicbug.bikini.model.Likes;
 import com.basicbug.bikini.model.User;
+import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
+import com.basicbug.bikini.model.likes.Likes;
+import com.basicbug.bikini.model.likes.TargetType;
 import com.basicbug.bikini.repository.LikesRepository;
+import com.basicbug.bikini.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,29 +17,32 @@ import org.springframework.stereotype.Service;
 public class LikesService {
 
     private final LikesRepository likesRepository;
+    private final UserRepository userRepository;
 
-    public List<Long> getMostLikesFeedIds(int limit) {
-        return likesRepository.getMostLikesFeedIds(limit);
+    public List<String> getMostLikesTargetIds(TargetType targetType, int limit) {
+        return likesRepository.getMostLikesForTarget(targetType, limit);
     }
 
-    public Likes addLikesToFeed(Feed feed, User user) {
-        Likes oldLikes = likesRepository.findByFeedAndUser(feed, user);
+    public Likes addLikesToTarget(TargetType targetType, String targetId, String uid) {
+        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
+
+        Likes oldLikes = likesRepository.findByTargetTypeAndTargetIdAndUser(targetType, targetId, user);
 
         if (oldLikes != null) {
-            log.info("Already registered likes " + feed.getFeedId());
+            log.info("Already registered likes : " + targetType + " " + targetId);
             return oldLikes;
         }
 
-        Likes newLikes = new Likes();
-        newLikes.setFeed(feed);
-        newLikes.setUser(user);
+        Likes newLikes = new Likes(targetType, targetId, user);
 
         likesRepository.save(newLikes);
         return newLikes;
     }
 
-    public boolean removeLikesFromFeed(Feed feed, User user) {
-        Likes likes = likesRepository.findByFeedAndUser(feed, user);
+    public boolean removeLikesFromTarget(TargetType targetType, String targetId, String uid) {
+        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
+
+        Likes likes = likesRepository.findByTargetTypeAndTargetIdAndUser(targetType, targetId, user);
 
         if (likes == null) {
             log.info("Likes is not registered");
@@ -48,7 +53,8 @@ public class LikesService {
         return true;
     }
 
-    public Likes getLikesForFeedByUser(Feed feed, User user) {
-        return likesRepository.findByFeedAndUser(feed, user);
+    public Likes getLikesForTargetByUser(TargetType targetType, String targetId, String uid) {
+        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
+        return likesRepository.findByTargetTypeAndTargetIdAndUser(targetType, targetId, user);
     }
 }

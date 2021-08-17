@@ -8,10 +8,10 @@ import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.FeedImage;
-import com.basicbug.bikini.model.Likes;
 import com.basicbug.bikini.model.Point;
 import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
+import com.basicbug.bikini.model.likes.TargetType;
 import com.basicbug.bikini.repository.FeedRepository;
 import com.basicbug.bikini.repository.UserRepository;
 import java.util.Comparator;
@@ -70,7 +70,7 @@ public class FeedService {
      */
     public FeedListResponse getMostLikesFeedList(int limit) {
         List<Feed> allFeeds = feedRepository.findAll();
-        List<Long> topFeedIds = likesService.getMostLikesFeedIds(limit);
+        List<String> topFeedIds = likesService.getMostLikesTargetIds(TargetType.FEED, limit);
 
         allFeeds.sort(new Comparator<Feed>() {
             @Override
@@ -87,7 +87,7 @@ public class FeedService {
 
         Set<Feed> selectedFeeds = allFeeds
             .stream()
-            .filter(it -> topFeedIds.contains(it.getId()))
+            .filter(it -> topFeedIds.contains(it.getFeedId().toString()))
             .collect(Collectors.toSet());
 
         for (Feed feed : allFeeds) {
@@ -101,24 +101,6 @@ public class FeedService {
             .map(Feed::toResponseDto)
             .collect(Collectors.toList())
         );
-    }
-
-    public Likes addLikesToFeed(String feedId, String uid) {
-        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
-        Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
-        return likesService.addLikesToFeed(feed, user);
-    }
-
-    public boolean removeLikesFromFeed(String feedId, String uid) {
-        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
-        Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
-        return likesService.removeLikesFromFeed(feed, user);
-    }
-
-    public Likes getLikesForFeedByUser(String feedId, String uid) {
-        User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
-        Feed feed = feedRepository.findByFeedId(UUID.fromString(feedId));
-        return likesService.getLikesForFeedByUser(feed, user);
     }
 
     /**
