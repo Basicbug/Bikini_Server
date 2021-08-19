@@ -39,7 +39,12 @@ public class LikesController {
         String targetId = likesRequestDto.getTargetId();
 
         Likes likes = likesService.addLikesToTarget(targetType, targetId, uid);
-        return CommonResponse.of(new LikesResponseDto(targetType, targetId, likes));
+        return CommonResponse.of(LikesResponseDto.builder()
+            .targetType(targetType)
+            .targetId(targetId)
+            .isLiked(likes != null)
+            .build()
+        );
     }
 
     @ApiOperation(value = "Remove likes from Target", notes = "지정 타겟에서 좋아요 제거")
@@ -55,7 +60,12 @@ public class LikesController {
         // TODO:qwebnm7788 제거 작업 실패 케이스 처리
         likesService.removeLikesFromTarget(targetType, targetId, uid);
 
-        return CommonResponse.of(new LikesResponseDto(targetType, targetId, null));
+        return CommonResponse.of(LikesResponseDto.builder()
+            .targetType(targetType)
+            .targetId(targetId)
+            .isLiked(false)
+            .build()
+        );
     }
 
     @ApiOperation(value = "Check if given target is liked by user", notes = "지정 타겟 좋아요 여부 확인")
@@ -69,6 +79,11 @@ public class LikesController {
         String targetId = likesRequestDto.getTargetId();
 
         Likes isLiked = likesService.getLikesForTargetByUser(targetType, targetId, uid);
-        return CommonResponse.of(new LikesResponseDto(targetType, targetId, isLiked));
+        return CommonResponse.of(LikesResponseDto.builder()
+            .targetType(targetType)
+            .targetId(targetId)
+            .isLiked(isLiked != null)
+            .build()
+        );
     }
 }

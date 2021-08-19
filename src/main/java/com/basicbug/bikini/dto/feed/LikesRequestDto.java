@@ -1,11 +1,9 @@
 package com.basicbug.bikini.dto.feed;
 
 import com.basicbug.bikini.model.likes.TargetType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Value;
 
-@Getter
-@AllArgsConstructor
+@Value
 public class LikesRequestDto {
 
     TargetType targetType;

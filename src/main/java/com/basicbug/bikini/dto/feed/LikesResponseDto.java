@@ -1,23 +1,14 @@
 package com.basicbug.bikini.dto.feed;
 
-import com.basicbug.bikini.model.likes.Likes;
 import com.basicbug.bikini.model.likes.TargetType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Value;
 
-@Getter
-@AllArgsConstructor
+@Value
+@Builder
 public class LikesResponseDto {
 
-    private TargetType targetType;
-    private String targetId;
-    private boolean isLiked = false;
-
-    public LikesResponseDto(TargetType targetType, String targetId, Likes likes) {
-        this.targetType = targetType;
-        this.targetId = targetId;
-        if (likes != null) {
-            isLiked = true;
-        }
-    }
+    TargetType targetType;
+    String targetId;
+    boolean isLiked;
 }
