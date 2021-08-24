@@ -6,7 +6,7 @@ import static com.basicbug.bikini.error.CommonResponseConstant.SUCCESS;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.dto.user.UserResponseDto;
 import com.basicbug.bikini.dto.user.UserUpdateRequestDto;
-import com.basicbug.bikini.model.auth.exception.UidAlreadyExistException;
+import com.basicbug.bikini.model.auth.exception.UsernameAlreadyExistException;
 import com.basicbug.bikini.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -56,7 +56,7 @@ public class UserController {
         return CommonResponse.of(SUCCESS);
     }
 
-    @ExceptionHandler(UidAlreadyExistException.class)
+    @ExceptionHandler(UsernameAlreadyExistException.class)
     public CommonResponse<String> handleUidAlreadyExists(Exception exception) {
         log.error("Uid is already exists");
         return CommonResponse.error(INVALID_REQUEST.getCode(), "username already exists");

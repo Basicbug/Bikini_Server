@@ -7,8 +7,8 @@ import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import com.basicbug.bikini.model.auth.NaverProfile;
 import com.basicbug.bikini.model.auth.exception.InvalidAccessTokenException;
-import com.basicbug.bikini.model.auth.exception.UidAlreadyExistException;
 import com.basicbug.bikini.model.auth.exception.UserNotFoundException;
+import com.basicbug.bikini.model.auth.exception.UsernameAlreadyExistException;
 import com.basicbug.bikini.repository.UserRepository;
 import com.basicbug.bikini.util.JwtTokenProvider;
 import java.util.Collections;
@@ -36,20 +36,19 @@ public class UserService {
 
     @Transactional
     public void updateUserInfo(String uid, UserUpdateRequestDto userUpdateRequestDto) {
-        User newUser = new User();
-        newUser.setUid(userUpdateRequestDto.getUsername());
+        String requestedUserName = userUpdateRequestDto.getUsername();
 
-        if (isExistingUid(newUser.getUid())) {
-            throw new UidAlreadyExistException("uid already exists " + newUser.getUid());
+        if (isExistingUsername(requestedUserName)) {
+            throw new UsernameAlreadyExistException("username already exists " + requestedUserName);
         }
 
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
-        user.updateUserInfo(newUser);
+        user.setUsername(userUpdateRequestDto.getUsername());
         userRepository.save(user);
     }
 
-    private boolean isExistingUid(String uid) {
-        return userRepository.findByUid(uid).isPresent();
+    private boolean isExistingUsername(String username) {
+        return userRepository.findByUsername(username).isPresent();
     }
 
     // TODO: Refactor to more generic way
@@ -81,6 +80,7 @@ public class UserService {
         return userRepository.save(
             User.builder()
                 .uid(uid)
+                .username(uid)
                 .provider(provider)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build()
@@ -88,6 +88,6 @@ public class UserService {
     }
 
     private String getJwtToken(User user) {
-        return jwtTokenProvider.generateToken(String.valueOf(user.getId()), user.getRoles());
+        return jwtTokenProvider.generateToken(user.getUid(), user.getRoles());
     }
 }

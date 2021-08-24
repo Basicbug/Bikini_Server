@@ -41,6 +41,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true, length = 50)
     private String uid;
 
+    @Column(nullable = false, unique = true, length = 50)
+    private String username;
+
     @Column(length = 100)
     private String password;
 
@@ -85,12 +88,12 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     public void updateUserInfo(User newUser) {
-        this.uid = newUser.getUsername();
+        this.username = newUser.getUsername();
     }
 
     public UserResponseDto toDto() {
         return UserResponseDto.builder()
-            .username(this.uid)
+            .username(this.username)
             .build();
     }
 }
