@@ -35,16 +35,18 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserInfo(String uid, UserUpdateRequestDto userUpdateRequestDto) {
-        String requestedUserName = userUpdateRequestDto.getUsername();
+    public User updateUserInfo(String uid, UserUpdateRequestDto userUpdateRequestDto) {
+        String requestedUserName = userUpdateRequestDto.getUserInfo().getUsername();
 
         if (isExistingUsername(requestedUserName)) {
             throw new UsernameAlreadyExistException("username already exists " + requestedUserName);
         }
 
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
-        user.setUsername(userUpdateRequestDto.getUsername());
+        user.setUsername(userUpdateRequestDto.getUserInfo().getUsername());
         userRepository.save(user);
+
+        return user;
     }
 
     private boolean isExistingUsername(String username) {

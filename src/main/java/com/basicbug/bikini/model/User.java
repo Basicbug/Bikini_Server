@@ -1,5 +1,6 @@
 package com.basicbug.bikini.model;
 
+import com.basicbug.bikini.dto.user.UserInfo;
 import com.basicbug.bikini.dto.user.UserResponseDto;
 import com.basicbug.bikini.model.auth.AuthProvider;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class User extends BaseEntity implements UserDetails {
 
     public UserResponseDto toDto() {
         return UserResponseDto.builder()
-            .username(this.username)
+            .userInfo(UserInfo.builder().username(this.username).build())
             .build();
     }
 }

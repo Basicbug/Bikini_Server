@@ -6,6 +6,7 @@ import static com.basicbug.bikini.error.CommonResponseConstant.SUCCESS;
 import com.basicbug.bikini.dto.common.CommonResponse;
 import com.basicbug.bikini.dto.user.UserResponseDto;
 import com.basicbug.bikini.dto.user.UserUpdateRequestDto;
+import com.basicbug.bikini.model.User;
 import com.basicbug.bikini.model.auth.exception.UsernameAlreadyExistException;
 import com.basicbug.bikini.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -46,14 +47,14 @@ public class UserController {
     @ApiOperation(value = "Update user info", notes = "사용자 정보 업데이트")
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<Void> updateUserInfo(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+    public CommonResponse<UserResponseDto> updateUserInfo(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = authentication.getName();
 
         log.info("update user information with ${}", uid);
-        userService.updateUserInfo(uid, userUpdateRequestDto);
+        User updatedUser = userService.updateUserInfo(uid, userUpdateRequestDto);
 
-        return CommonResponse.of(SUCCESS);
+        return CommonResponse.of(updatedUser.toDto(), SUCCESS.getCode());
     }
 
     @ExceptionHandler(UsernameAlreadyExistException.class)
