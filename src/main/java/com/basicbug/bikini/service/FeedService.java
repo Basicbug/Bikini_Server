@@ -5,6 +5,7 @@ import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
 import com.basicbug.bikini.dto.feed.FeedImageResponseDto;
 import com.basicbug.bikini.dto.feed.FeedListResponse;
 import com.basicbug.bikini.dto.feed.FeedNearLocationRequestDto;
+import com.basicbug.bikini.dto.feed.FeedResponse;
 import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
 import com.basicbug.bikini.model.Feed;
 import com.basicbug.bikini.model.FeedImage;
@@ -43,7 +44,7 @@ public class FeedService {
     public FeedListResponse getAllFeedResponseList() {
         return new FeedListResponse(feedRepository.findAll()
             .stream()
-            .map(Feed::toResponseDto)
+            .map(this::convertToResponseDto)
             .collect(Collectors.toList()));
     }
 
@@ -58,7 +59,7 @@ public class FeedService {
         return new FeedListResponse(feedRepository.findAll()
             .stream()
             .filter(it -> it.getUser().getUid().equals(userId))
-            .map(Feed::toResponseDto)
+            .map(this::convertToResponseDto)
             .collect(Collectors.toList()));
     }
 
@@ -98,7 +99,7 @@ public class FeedService {
 
         return new FeedListResponse(selectedFeeds
             .stream()
-            .map(Feed::toResponseDto)
+            .map(this::convertToResponseDto)
             .collect(Collectors.toList())
         );
     }
@@ -115,7 +116,7 @@ public class FeedService {
         List<Feed> feeds = feedRepository.findFeedsNearLocation(point.getLongitude(), point.getLatitude(), radius);
         return new FeedListResponse(
             feeds.stream()
-                .map(Feed::toResponseDto)
+                .map(this::convertToResponseDto)
                 .collect(Collectors.toList())
         );
     }
@@ -185,5 +186,12 @@ public class FeedService {
     public List<FeedImageResponseDto> uploadImages(List<MultipartFile> images, String dirName) {
         List<FeedImage> feedImages = imageService.uploadImages(images, dirName);
         return FeedImageResponseDto.listOf(feedImages);
+    }
+
+    private FeedResponse convertToResponseDto(Feed feed) {
+        int numOfLikes = likesService.getLikesCount(TargetType.FEED, feed.getFeedId().toString());
+        FeedResponse response = feed.toResponseDto();
+        response.setNumOfLikes(numOfLikes);
+        return response;
     }
 }

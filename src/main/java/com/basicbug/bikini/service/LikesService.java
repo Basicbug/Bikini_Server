@@ -57,4 +57,8 @@ public class LikesService {
         User user = userRepository.findByUid(uid).orElseThrow(() -> new UserNotFoundException("Invalid user : " + uid));
         return likesRepository.findByTargetTypeAndTargetIdAndUser(targetType, targetId, user);
     }
+
+    public int getLikesCount(TargetType targetType, String targetId) {
+        return likesRepository.findAllByTargetTypeAndTargetId(targetType, targetId).size();
+    }
 }

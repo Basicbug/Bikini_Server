@@ -13,4 +13,6 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     List<String> getMostLikesForTarget(TargetType targetType, int limit);
 
     Likes findByTargetTypeAndTargetIdAndUser(TargetType targetType, String targetId, User user);
+
+    List<Likes> findAllByTargetTypeAndTargetId(TargetType targetType, String targetId);
 }

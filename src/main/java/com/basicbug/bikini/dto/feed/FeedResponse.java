@@ -21,6 +21,7 @@ public class FeedResponse {
 
     private UUID feedId;
     private Integer feedNumOfUser;
+    private int numOfLikes;
     private String username;
     private String content;
     private List<String> imageUrl;
