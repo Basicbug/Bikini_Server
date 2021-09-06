@@ -68,6 +68,10 @@ public class User extends BaseEntity implements UserDetails {
         return uid;
     }
 
+    public String getNickname() {
+        return username;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

@@ -69,7 +69,7 @@ public class Feed extends BaseEntity {
         return FeedResponse.builder()
             .feedId(feedId)
             .feedNumOfUser(feedNumOfUser)
-            .username(user.getUsername())
+            .username(user.getNickname())
             .content(content)
             .imageUrl(images.stream().map(FeedImage::getUrl).collect(Collectors.toList()))
             .location(location)
