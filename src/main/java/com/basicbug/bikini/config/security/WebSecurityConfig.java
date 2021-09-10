@@ -1,7 +1,7 @@
 package com.basicbug.bikini.config.security;
 
-import com.basicbug.bikini.filter.JwtAuthorizationFilter;
-import com.basicbug.bikini.util.JwtTokenProvider;
+import com.basicbug.bikini.auth.filter.JwtAuthorizationFilter;
+import com.basicbug.bikini.auth.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

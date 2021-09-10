@@ -1,13 +1,14 @@
 package com.basicbug.bikini.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
-import com.basicbug.bikini.model.Feed;
-import com.basicbug.bikini.model.Location;
-import com.basicbug.bikini.model.Point;
+import com.basicbug.bikini.feed.model.Feed;
+import com.basicbug.bikini.feed.model.Location;
+import com.basicbug.bikini.feed.model.Point;
 import java.util.List;
 import java.util.UUID;
+
+import com.basicbug.bikini.feed.repository.FeedRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

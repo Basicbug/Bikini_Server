@@ -6,12 +6,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.basicbug.bikini.dto.feed.FeedDeleteRequestDto;
-import com.basicbug.bikini.dto.feed.FeedUpdateRequestDto;
-import com.basicbug.bikini.model.Feed;
-import com.basicbug.bikini.model.Location;
-import com.basicbug.bikini.repository.FeedRepository;
+import com.basicbug.bikini.feed.dto.FeedDeleteRequestDto;
+import com.basicbug.bikini.feed.dto.FeedUpdateRequestDto;
+import com.basicbug.bikini.feed.model.Feed;
+import com.basicbug.bikini.feed.model.Location;
+import com.basicbug.bikini.feed.repository.FeedRepository;
 import java.util.UUID;
+
+import com.basicbug.bikini.feed.service.FeedService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
