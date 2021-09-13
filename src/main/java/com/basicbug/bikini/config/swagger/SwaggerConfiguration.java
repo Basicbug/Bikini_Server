@@ -21,7 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
-    private static final String CONTROLLER_BASE_PATH = "com.basicbug.bikini.controller";
+    private static final String CONTROLLER_BASE_PATH = "com.basicbug.bikini";
     private static final String GROUP_URL_PATTERN = "/%s/%s/**";
 
     @Bean
