@@ -1,6 +1,7 @@
 package com.basicbug.bikini.feed.controller;
 
 
+import static com.basicbug.bikini.auth.constant.AuthConstants.NORMAL_USER;
 import static com.basicbug.bikini.common.type.CommonResponseCode.FAIL_TO_PROCESS;
 import static com.basicbug.bikini.common.type.CommonResponseCode.SUCCESS;
 
@@ -13,12 +14,12 @@ import com.basicbug.bikini.feed.dto.FeedNearLocationRequestDto;
 import com.basicbug.bikini.feed.dto.FeedUpdateRequestDto;
 import com.basicbug.bikini.feed.service.FeedService;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,8 +42,9 @@ public class FeedController {
     private final FeedService feedService;
     private static final String FEED_IMAGE_DIR = "feed";
 
-    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", dataType = "String", paramType = "header")
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
     @ApiOperation(value = "Add feed", notes = "Feed 정보 추가")
+    @Secured(NORMAL_USER)
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<Void> addFeed(@RequestBody FeedCreateRequestDto feedCreateRequestDto) {
@@ -54,7 +56,9 @@ public class FeedController {
         return CommonResponse.of(SUCCESS);
     }
 
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
     @ApiOperation(value = "Delete Feed", notes = "Feed 정보 삭제")
+    @Secured(NORMAL_USER)
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public CommonResponse<Void> deleteFeed(@RequestBody FeedDeleteRequestDto feedDeleteRequestDto) {
@@ -67,7 +71,9 @@ public class FeedController {
         }
     }
 
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
     @ApiOperation(value = "Update feed", notes = "Feed 정보 갱신")
+    @Secured(NORMAL_USER)
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<Void> updateFeed(@RequestBody FeedUpdateRequestDto feedUpdateRequestDto) {
@@ -75,7 +81,6 @@ public class FeedController {
         return CommonResponse.of(SUCCESS);
     }
 
-    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", dataType = "String", paramType = "header")
     @ApiOperation(value = "Get all feed list", notes = "전체 Feed 리스트")
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
@@ -84,7 +89,6 @@ public class FeedController {
         return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
-    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", dataType = "String", paramType = "header")
     @ApiOperation(value = "Get top most likes feed list", notes = "좋아요 수 상위 limit 개의 피드 리스트")
     @GetMapping("/list/top/{limit}")
     @ResponseStatus(HttpStatus.OK)
@@ -109,9 +113,8 @@ public class FeedController {
         return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
-    })
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
+    @Secured(NORMAL_USER)
     @GetMapping("/list/me")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<FeedListResponse> getMyFeedList() {
@@ -119,7 +122,9 @@ public class FeedController {
         return CommonResponse.of(feedListResponse, SUCCESS);
     }
 
+    @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "JWT token", required = true, dataType = "String", paramType = "header")
     @ApiOperation(value = "Upload images", notes = "피드 내 이미지 업로드")
+    @Secured(NORMAL_USER)
     @PostMapping("/upload/images")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<List<FeedImageResponseDto>> uploadImage(List<MultipartFile> images) {
