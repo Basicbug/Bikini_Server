@@ -57,7 +57,6 @@ public class FeedService {
      * @return 사용자의 피드 목록
      */
     public FeedListResponse getFeedListOf(String userId) {
-        // TODO:  Filter 를 쿼리 단에서 하는 게 좋은가 아니면 데이터를 꺼낸 뒤 수행하는 것이 좋은가?
         return new FeedListResponse(feedRepository.findAll()
             .stream()
             .filter(it -> it.getUser().getUid().equals(userId))

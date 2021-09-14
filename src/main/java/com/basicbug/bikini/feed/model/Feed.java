@@ -43,6 +43,7 @@ public class Feed extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
     @Column(columnDefinition = "VARCHAR(36)", nullable = false)
     @Type(type = "org.hibernate.type.UUIDCharType")
+    @Builder.Default
     private UUID feedId = UUID.randomUUID();
 
     private int feedNumOfUser;
@@ -56,6 +57,7 @@ public class Feed extends BaseEntity {
     private String imageUrl;
 
     @OneToMany(mappedBy = "feed", cascade = CascadeType.PERSIST)
+    @Builder.Default
     private List<FeedImage> images = new ArrayList<>();
 
     @Embedded
