@@ -17,10 +17,8 @@ import com.basicbug.bikini.auth.exception.UserNotFoundException;
 import com.basicbug.bikini.likes.type.TargetType;
 import com.basicbug.bikini.feed.repository.FeedRepository;
 import com.basicbug.bikini.user.repository.UserRepository;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,11 +54,11 @@ public class FeedService {
      * @param userId 사용자 ID
      * @return 사용자의 피드 목록
      */
-    public FeedListResponse getFeedListOf(String userId) {
-        // TODO:  Filter 를 쿼리 단에서 하는 게 좋은가 아니면 데이터를 꺼낸 뒤 수행하는 것이 좋은가?
-        return new FeedListResponse(feedRepository.findAll()
+    public FeedListResponse getFeedListOf(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("유저가 조회되지 않습니다. username:" + username));
+        return new FeedListResponse(feedRepository.findByUser(user)
             .stream()
-            .filter(it -> it.getUser().getUid().equals(userId))
             .map(this::convertToResponseDto)
             .collect(Collectors.toList()));
     }

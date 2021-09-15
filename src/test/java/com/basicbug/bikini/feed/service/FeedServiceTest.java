@@ -1,4 +1,4 @@
-package com.basicbug.bikini.service;
+package com.basicbug.bikini.feed.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

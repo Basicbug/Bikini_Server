@@ -50,6 +50,7 @@ public class User extends BaseEntity implements UserDetails {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
     private List<String> roles = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
