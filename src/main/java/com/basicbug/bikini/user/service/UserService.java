@@ -2,6 +2,8 @@ package com.basicbug.bikini.user.service;
 
 import com.basicbug.bikini.auth.dto.AuthRequestDto;
 import com.basicbug.bikini.auth.model.OAuthToken;
+import com.basicbug.bikini.auth.model.RefreshToken;
+import com.basicbug.bikini.auth.repository.RefreshTokenRepository;
 import com.basicbug.bikini.auth.service.KakaoService;
 import com.basicbug.bikini.auth.service.NaverService;
 import com.basicbug.bikini.user.dto.UserUpdateRequestDto;
@@ -25,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -93,12 +97,19 @@ public class UserService {
     }
 
     private OAuthToken getJwtToken(User user) {
-        final String accessToken = jwtTokenProvider.createAccessToken(user.getUid(), user.getRoles());
-        final String refreshToken = jwtTokenProvider.createRefreshToken(user.getUid(), user.getRoles());
+        OAuthToken oAuthToken = OAuthToken.builder()
+            .accessToken(jwtTokenProvider.createAccessToken(user.getUid(), user.getRoles()))
+            .refreshToken(jwtTokenProvider.createRefreshToken(user.getUid(), user.getRoles()))
+            .build();
 
-        return OAuthToken.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
+        // TODO refresh token 을 DB 에 저장
+        RefreshToken refreshToken = RefreshToken.builder().key(user.getUid())
+            .token(oAuthToken.getRefreshToken())
+            .expireTime(jwtTokenProvider.getExpireTime(oAuthToken.getRefreshToken()))
+            .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return oAuthToken;
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private static final long ACCESS_TOKEN_EXPIRE_DURATION = 2 * 60 * 60 * 1000L;  // 2 hour
+    private static final long ACCESS_TOKEN_EXPIRE_DURATION = 30 * 1000L;  // 2 hour
     private static final long REFRESH_TOKEN_EXPIRE_DURATION = 24 * 60 * 60 * 1000L; // One day
 
     private final UserDetailsService userDetailsService;
@@ -43,7 +43,15 @@ public class JwtTokenProvider {
 
     public boolean isValidToken(String token) {
         if (token == null || token.isEmpty()) return false;
-        return !JWT.decode(token).getExpiresAt().before(new Date());
+        return !isTokenExpired(token);
+    }
+
+    public boolean isTokenExpired(String token) {
+        return JWT.decode(token).getExpiresAt().before(new Date());
+    }
+
+    public long getExpireTime(String token) {
+        return JWT.decode(token).getExpiresAt().getTime();
     }
 
     public Authentication getAuthentication(String token) {
