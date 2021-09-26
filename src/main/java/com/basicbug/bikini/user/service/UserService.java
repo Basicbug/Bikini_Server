@@ -1,6 +1,7 @@
 package com.basicbug.bikini.user.service;
 
 import com.basicbug.bikini.auth.dto.AuthRequestDto;
+import com.basicbug.bikini.auth.model.OAuthToken;
 import com.basicbug.bikini.auth.service.KakaoService;
 import com.basicbug.bikini.auth.service.NaverService;
 import com.basicbug.bikini.user.dto.UserUpdateRequestDto;
@@ -56,7 +57,7 @@ public class UserService {
     }
 
     // TODO: Refactor to more generic way
-    public String checkOrRegisterUser(AuthRequestDto authRequestDto, AuthProvider provider) {
+    public OAuthToken checkOrRegisterUser(AuthRequestDto authRequestDto, AuthProvider provider) {
         String accessToken = authRequestDto.getAccessToken();
 
         if (accessToken.isEmpty()) throw new InvalidAccessTokenException("access token should not be empty");
@@ -91,7 +92,13 @@ public class UserService {
         );
     }
 
-    private String getJwtToken(User user) {
-        return jwtTokenProvider.generateToken(user.getUid(), user.getRoles());
+    private OAuthToken getJwtToken(User user) {
+        final String accessToken = jwtTokenProvider.createAccessToken(user.getUid(), user.getRoles());
+        final String refreshToken = jwtTokenProvider.createRefreshToken(user.getUid(), user.getRoles());
+
+        return OAuthToken.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
     }
 }

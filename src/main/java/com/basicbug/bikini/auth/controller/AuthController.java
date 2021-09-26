@@ -2,16 +2,17 @@ package com.basicbug.bikini.auth.controller;
 
 import static com.basicbug.bikini.common.type.CommonResponseCode.SUCCESS;
 
-import com.basicbug.bikini.config.auth.AuthConfig;
-import com.basicbug.bikini.config.auth.KakaoAuthConfig;
-import com.basicbug.bikini.config.auth.NaverAuthConfig;
 import com.basicbug.bikini.auth.dto.AuthRequestDto;
 import com.basicbug.bikini.auth.dto.JwtTokenResponseDto;
-import com.basicbug.bikini.common.dto.CommonResponse;
 import com.basicbug.bikini.auth.model.AuthProvider;
 import com.basicbug.bikini.auth.model.KakaoAuth;
 import com.basicbug.bikini.auth.model.NaverAuth;
+import com.basicbug.bikini.auth.model.OAuthToken;
 import com.basicbug.bikini.auth.model.SocialAuth;
+import com.basicbug.bikini.common.dto.CommonResponse;
+import com.basicbug.bikini.config.auth.AuthConfig;
+import com.basicbug.bikini.config.auth.KakaoAuthConfig;
+import com.basicbug.bikini.config.auth.NaverAuthConfig;
 import com.basicbug.bikini.user.service.UserService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +54,8 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<JwtTokenResponseDto> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
         AuthProvider authProvider = AuthProvider.of(provider.toUpperCase());
-        String jwtToken = userService.checkOrRegisterUser(requestDto, authProvider);
-        return CommonResponse.of(new JwtTokenResponseDto(jwtToken), SUCCESS);
+        OAuthToken oAuthToken = userService.checkOrRegisterUser(requestDto, authProvider);
+        return CommonResponse.of(new JwtTokenResponseDto(oAuthToken), SUCCESS);
     }
 
     @ApiIgnore
