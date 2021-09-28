@@ -3,6 +3,7 @@ package com.basicbug.bikini.auth.controller;
 import static com.basicbug.bikini.common.type.CommonResponseCode.SUCCESS;
 
 import com.basicbug.bikini.auth.dto.AuthRequestDto;
+import com.basicbug.bikini.auth.dto.JwtTokenRefreshRequestDto;
 import com.basicbug.bikini.auth.dto.JwtTokenResponseDto;
 import com.basicbug.bikini.auth.model.AuthProvider;
 import com.basicbug.bikini.auth.model.KakaoAuth;
@@ -26,6 +27,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -55,6 +57,13 @@ public class AuthController {
     public CommonResponse<JwtTokenResponseDto> login(@PathVariable("provider") String provider, AuthRequestDto requestDto) {
         AuthProvider authProvider = AuthProvider.of(provider.toUpperCase());
         OAuthToken oAuthToken = userService.checkOrRegisterUser(requestDto, authProvider);
+        return CommonResponse.of(new JwtTokenResponseDto(oAuthToken), SUCCESS);
+    }
+
+    @PostMapping("/refresh")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<JwtTokenResponseDto> refresh(JwtTokenRefreshRequestDto requestDto) {
+        OAuthToken oAuthToken = userService.refreshToken(requestDto);
         return CommonResponse.of(new JwtTokenResponseDto(oAuthToken), SUCCESS);
     }
 

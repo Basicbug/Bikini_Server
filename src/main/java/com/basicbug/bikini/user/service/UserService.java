@@ -1,24 +1,29 @@
 package com.basicbug.bikini.user.service;
 
 import com.basicbug.bikini.auth.dto.AuthRequestDto;
+import com.basicbug.bikini.auth.dto.JwtTokenRefreshRequestDto;
+import com.basicbug.bikini.auth.exception.InvalidAccessTokenException;
+import com.basicbug.bikini.auth.exception.UserNotFoundException;
+import com.basicbug.bikini.auth.exception.UsernameAlreadyExistException;
+import com.basicbug.bikini.auth.model.AuthProvider;
+import com.basicbug.bikini.auth.model.KakaoProfile;
+import com.basicbug.bikini.auth.model.NaverProfile;
 import com.basicbug.bikini.auth.model.OAuthToken;
 import com.basicbug.bikini.auth.model.RefreshToken;
 import com.basicbug.bikini.auth.repository.RefreshTokenRepository;
 import com.basicbug.bikini.auth.service.KakaoService;
 import com.basicbug.bikini.auth.service.NaverService;
-import com.basicbug.bikini.user.dto.UserUpdateRequestDto;
-import com.basicbug.bikini.auth.model.KakaoProfile;
-import com.basicbug.bikini.user.model.User;
-import com.basicbug.bikini.auth.model.AuthProvider;
-import com.basicbug.bikini.auth.model.NaverProfile;
-import com.basicbug.bikini.auth.exception.InvalidAccessTokenException;
-import com.basicbug.bikini.auth.exception.UserNotFoundException;
-import com.basicbug.bikini.auth.exception.UsernameAlreadyExistException;
-import com.basicbug.bikini.user.repository.UserRepository;
 import com.basicbug.bikini.auth.util.JwtTokenProvider;
+import com.basicbug.bikini.user.dto.UserUpdateRequestDto;
+import com.basicbug.bikini.user.exception.InvalidRefreshTokenException;
+import com.basicbug.bikini.user.exception.RefreshTokenNotFoundException;
+import com.basicbug.bikini.user.exception.RefreshTokenNotMatchedException;
+import com.basicbug.bikini.user.model.User;
+import com.basicbug.bikini.user.repository.UserRepository;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +90,32 @@ public class UserService {
         throw new InvalidAccessTokenException("fail to get user profile");
     }
 
+    public OAuthToken refreshToken(JwtTokenRefreshRequestDto requestDto) {
+        String accessToken = requestDto.getAccessToken();
+        String refreshToken = requestDto.getRefreshToken();
+
+        if (!jwtTokenProvider.isValidToken(refreshToken)) {
+            throw new InvalidRefreshTokenException("Invalid refresh token");
+        }
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        RefreshToken savedRefreshToken = refreshTokenRepository.findByKey(authentication.getName())
+            .orElseThrow(() -> new RefreshTokenNotFoundException("token is not exists"));
+
+        if (!savedRefreshToken.getToken().equals(refreshToken)) {
+            throw new RefreshTokenNotMatchedException("refresh token is not matched");
+        }
+
+        User user = userRepository.findByUid(authentication.getName())
+            .orElseThrow(() -> new UserNotFoundException("user is not exists"));
+        OAuthToken updatedToken = getJwtToken(user);
+
+        RefreshToken updatedRefreshToken = savedRefreshToken.updateToken(updatedToken.getRefreshToken());
+        refreshTokenRepository.save(updatedRefreshToken);
+
+        return updatedToken;
+    }
+
     private User registerUserAndGet(String uid, AuthProvider provider) {
         return userRepository.save(
             User.builder()
@@ -102,7 +133,6 @@ public class UserService {
             .refreshToken(jwtTokenProvider.createRefreshToken(user.getUid(), user.getRoles()))
             .build();
 
-        // TODO refresh token 을 DB 에 저장
         RefreshToken refreshToken = RefreshToken.builder().key(user.getUid())
             .token(oAuthToken.getRefreshToken())
             .expireTime(jwtTokenProvider.getExpireTime(oAuthToken.getRefreshToken()))
