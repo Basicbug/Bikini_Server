@@ -3,6 +3,7 @@ package com.basicbug.bikini.auth.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,11 @@ public class JwtTokenProvider {
     }
 
     public boolean isTokenExpired(String token) {
-        return JWT.decode(token).getExpiresAt().before(new Date());
+        try {
+            return JWT.decode(token).getExpiresAt().before(new Date());
+        } catch (JWTDecodeException exception) {
+            return true;
+        }
     }
 
     public long getExpireTime(String token) {
