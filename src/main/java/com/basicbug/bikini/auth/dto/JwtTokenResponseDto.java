@@ -1,12 +1,15 @@
 package com.basicbug.bikini.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.basicbug.bikini.auth.model.OAuthToken;
+import lombok.Value;
 
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class JwtTokenResponseDto {
-    private String token;
+    String accessToken;
+    String refreshToken;
+
+    public JwtTokenResponseDto(OAuthToken oAuthToken) {
+        this.accessToken = oAuthToken.getAccessToken();
+        this.refreshToken = oAuthToken.getRefreshToken();
+    }
 }

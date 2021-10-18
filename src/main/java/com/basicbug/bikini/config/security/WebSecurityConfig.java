@@ -1,5 +1,6 @@
 package com.basicbug.bikini.config.security;
 
+import com.basicbug.bikini.auth.filter.JwtAuthenticationEntryPoint;
 import com.basicbug.bikini.auth.filter.JwtAuthorizationFilter;
 import com.basicbug.bikini.auth.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -39,6 +42,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/v1/auth/**").permitAll()
             .antMatchers("/v1/feed/**").permitAll()
             .anyRequest().authenticated()
+            .and()
+            .exceptionHandling()
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             .and()
             .headers().frameOptions().disable()
             .and()

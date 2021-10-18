@@ -6,16 +6,15 @@ import com.basicbug.bikini.auth.util.JwtTokenProvider;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
-public class JwtAuthorizationFilter extends GenericFilterBean {
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -24,15 +23,15 @@ public class JwtAuthorizationFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-        throws IOException, ServletException {
-        String token = ((HttpServletRequest) servletRequest).getHeader(REQUEST_TOKEN_HEADER_NAME);
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+        FilterChain filterChain) throws ServletException, IOException {
+        String token = httpServletRequest.getHeader(REQUEST_TOKEN_HEADER_NAME);
 
         if (jwtTokenProvider.isValidToken(token)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        filterChain.doFilter(servletRequest, servletResponse);
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }
