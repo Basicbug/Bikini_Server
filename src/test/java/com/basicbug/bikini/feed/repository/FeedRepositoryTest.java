@@ -72,7 +72,7 @@ class FeedRepositoryTest {
         long count = feedRepository.countByUser(user);
 
         // then
-        assertThat(count).isGreaterThan(0);
+        assertThat(count).isEqualTo(2L);
     }
 
     private User getTestUser() {
