@@ -60,6 +60,8 @@ dependencies {
     // Lombok
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
 
     implementation 'com.auth0:java-jwt:3.10.3'
 

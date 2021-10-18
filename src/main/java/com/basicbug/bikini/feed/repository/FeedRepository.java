@@ -26,4 +26,6 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Query("SELECT f FROM Feed f WHERE " + HAVERSINE_FORMULA + " < :distance ORDER BY "+ HAVERSINE_FORMULA + " DESC")
     List<Feed> findFeedsNearLocation(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("distance") double radius);
+
+    long countByUser(User user);
 }
