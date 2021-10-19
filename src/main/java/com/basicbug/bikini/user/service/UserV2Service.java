@@ -22,7 +22,7 @@ public class UserV2Service {
                 .orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
 
         return UserV2Info.builder()
-                .username(user.getUsername())
+                .username(user.getNickname())
                 .feedCount(feedRepository.countByUser(user))
                 .likeCount(likesRepository.countByUser(user))
                 .build();
