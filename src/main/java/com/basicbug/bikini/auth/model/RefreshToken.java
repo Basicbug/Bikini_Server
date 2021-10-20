@@ -18,7 +18,7 @@ import lombok.Setter;
 public class RefreshToken extends BaseEntity {
 
     @Id
-    String key;
+    String tokenId;
 
     String token;
 
