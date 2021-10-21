@@ -1,5 +1,6 @@
 package com.basicbug.bikini.feed.service;
 
+import com.basicbug.bikini.auth.exception.UserNotFoundException;
 import com.basicbug.bikini.feed.dto.FeedCreateRequestDto;
 import com.basicbug.bikini.feed.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.feed.dto.FeedImageResponseDto;
@@ -7,21 +8,25 @@ import com.basicbug.bikini.feed.dto.FeedListResponse;
 import com.basicbug.bikini.feed.dto.FeedNearLocationRequestDto;
 import com.basicbug.bikini.feed.dto.FeedResponse;
 import com.basicbug.bikini.feed.dto.FeedUpdateRequestDto;
-import com.basicbug.bikini.image.service.ImageService;
 import com.basicbug.bikini.feed.model.Feed;
 import com.basicbug.bikini.feed.model.FeedImage;
 import com.basicbug.bikini.feed.model.Point;
-import com.basicbug.bikini.likes.service.LikesService;
-import com.basicbug.bikini.user.model.User;
-import com.basicbug.bikini.auth.exception.UserNotFoundException;
-import com.basicbug.bikini.likes.type.TargetType;
 import com.basicbug.bikini.feed.repository.FeedRepository;
+import com.basicbug.bikini.image.service.ImageService;
+import com.basicbug.bikini.likes.service.LikesService;
+import com.basicbug.bikini.likes.type.TargetType;
+import com.basicbug.bikini.user.model.User;
 import com.basicbug.bikini.user.repository.UserRepository;
-
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -192,6 +197,18 @@ public class FeedService {
         int numOfLikes = likesService.getLikesCount(TargetType.FEED, feed.getFeedId().toString());
         FeedResponse response = feed.toResponseDto();
         response.setNumOfLikes(numOfLikes);
+
+        if (isNormalUser()) {
+            String uid = SecurityContextHolder.getContext().getAuthentication().getName();
+            boolean isLiked = likesService.getLikesForTargetByUser(TargetType.FEED, feed.getFeedId().toString(), uid) != null;
+            response.setIsLiked(isLiked);
+        }
+
         return response;
+    }
+
+    private boolean isNormalUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken);
     }
 }
