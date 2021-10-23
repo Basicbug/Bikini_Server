@@ -99,7 +99,7 @@ public class UserService {
         }
 
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        RefreshToken savedRefreshToken = refreshTokenRepository.findByKey(authentication.getName())
+        RefreshToken savedRefreshToken = refreshTokenRepository.findByTokenId(authentication.getName())
             .orElseThrow(() -> new RefreshTokenNotFoundException("token is not exists"));
 
         if (!savedRefreshToken.getToken().equals(refreshToken)) {
@@ -133,7 +133,7 @@ public class UserService {
             .refreshToken(jwtTokenProvider.createRefreshToken(user.getUid(), user.getRoles()))
             .build();
 
-        RefreshToken refreshToken = RefreshToken.builder().key(user.getUid())
+        RefreshToken refreshToken = RefreshToken.builder().tokenId(user.getUid())
             .token(oAuthToken.getRefreshToken())
             .expireTime(jwtTokenProvider.getExpireTime(oAuthToken.getRefreshToken()))
             .build();
