@@ -2,6 +2,8 @@ package com.basicbug.bikini.feed.dto;
 
 import com.basicbug.bikini.feed.model.Feed;
 import com.basicbug.bikini.feed.model.Location;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,8 @@ public class FeedResponse {
     private UUID feedId;
     private Integer feedNumOfUser;
     private int numOfLikes;
+    @JsonInclude(Include.NON_NULL)
+    private Boolean isLiked;
     private String username;
     private String content;
     private List<String> imageUrl;

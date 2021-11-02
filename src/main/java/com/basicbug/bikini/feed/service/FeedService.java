@@ -1,27 +1,31 @@
 package com.basicbug.bikini.feed.service;
 
+import com.basicbug.bikini.auth.exception.UserNotFoundException;
 import com.basicbug.bikini.feed.dto.FeedCreateRequestDto;
 import com.basicbug.bikini.feed.dto.FeedDeleteRequestDto;
 import com.basicbug.bikini.feed.dto.FeedImageResponseDto;
 import com.basicbug.bikini.feed.dto.FeedListResponse;
 import com.basicbug.bikini.feed.dto.FeedNearLocationRequestDto;
-import com.basicbug.bikini.feed.dto.FeedResponse;
 import com.basicbug.bikini.feed.dto.FeedUpdateRequestDto;
-import com.basicbug.bikini.image.service.ImageService;
 import com.basicbug.bikini.feed.model.Feed;
 import com.basicbug.bikini.feed.model.FeedImage;
 import com.basicbug.bikini.feed.model.Point;
-import com.basicbug.bikini.likes.service.LikesService;
-import com.basicbug.bikini.user.model.User;
-import com.basicbug.bikini.auth.exception.UserNotFoundException;
-import com.basicbug.bikini.likes.type.TargetType;
 import com.basicbug.bikini.feed.repository.FeedRepository;
+import com.basicbug.bikini.image.service.ImageService;
+import com.basicbug.bikini.likes.service.LikesService;
+import com.basicbug.bikini.likes.type.TargetType;
+import com.basicbug.bikini.user.model.User;
 import com.basicbug.bikini.user.repository.UserRepository;
-
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,14 +48,14 @@ public class FeedService {
     public FeedListResponse getAllFeedResponseList() {
         return new FeedListResponse(feedRepository.findAll()
             .stream()
-            .map(this::convertToResponseDto)
+            .map(feed -> feed.toResponseDto(getTotalLikesCountFor(feed.getFeedId()), isFeedLikedByCurrentUser(feed.getFeedId())))
             .collect(Collectors.toList()));
     }
 
     /**
      * userId 를 가진 사용자가 작성한 모든 피드 목록을 반환한다.
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 ID
      * @return 사용자의 피드 목록
      */
     public FeedListResponse getFeedListOf(String username) {
@@ -59,7 +63,7 @@ public class FeedService {
                 .orElseThrow(() -> new UserNotFoundException("유저가 조회되지 않습니다. username:" + username));
         return new FeedListResponse(feedRepository.findByUser(user)
             .stream()
-            .map(this::convertToResponseDto)
+            .map(feed -> feed.toResponseDto(getTotalLikesCountFor(feed.getFeedId()), isFeedLikedByCurrentUser(feed.getFeedId())))
             .collect(Collectors.toList()));
     }
 
@@ -99,7 +103,7 @@ public class FeedService {
 
         return new FeedListResponse(selectedFeeds
             .stream()
-            .map(this::convertToResponseDto)
+            .map(feed -> feed.toResponseDto(getTotalLikesCountFor(feed.getFeedId()), isFeedLikedByCurrentUser(feed.getFeedId())))
             .collect(Collectors.toList())
         );
     }
@@ -116,7 +120,7 @@ public class FeedService {
         List<Feed> feeds = feedRepository.findFeedsNearLocation(point.getLongitude(), point.getLatitude(), radius);
         return new FeedListResponse(
             feeds.stream()
-                .map(this::convertToResponseDto)
+                .map(feed -> feed.toResponseDto(getTotalLikesCountFor(feed.getFeedId()), isFeedLikedByCurrentUser(feed.getFeedId())))
                 .collect(Collectors.toList())
         );
     }
@@ -188,10 +192,19 @@ public class FeedService {
         return FeedImageResponseDto.listOf(feedImages);
     }
 
-    private FeedResponse convertToResponseDto(Feed feed) {
-        int numOfLikes = likesService.getLikesCount(TargetType.FEED, feed.getFeedId().toString());
-        FeedResponse response = feed.toResponseDto();
-        response.setNumOfLikes(numOfLikes);
-        return response;
+    private boolean isFeedLikedByCurrentUser(UUID feedId) {
+        if (!isNormalUser()) return false;
+
+        String uid = SecurityContextHolder.getContext().getAuthentication().getName();
+        return likesService.getLikesForTargetByUser(TargetType.FEED, feedId.toString(), uid) != null;
+    }
+
+    private int getTotalLikesCountFor(UUID feedId) {
+        return likesService.getLikesCount(TargetType.FEED, feedId.toString());
+    }
+
+    private boolean isNormalUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken);
     }
 }
