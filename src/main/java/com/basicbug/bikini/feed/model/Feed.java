@@ -70,7 +70,7 @@ public class Feed extends BaseEntity {
         this.location = newFeed.location;
     }
 
-    public FeedResponse toResponseDto() {
+    public FeedResponse toResponseDto(int numOfLikes, boolean isLiked) {
         return FeedResponse.builder()
             .feedId(feedId)
             .feedNumOfUser(feedNumOfUser)
@@ -78,6 +78,8 @@ public class Feed extends BaseEntity {
             .content(content)
             .imageUrl(images.stream().map(FeedImage::getUrl).collect(Collectors.toList()))
             .location(location)
+            .numOfLikes(numOfLikes)
+            .isLiked(isLiked)
             .modifiedAt(getModifiedAt())
             .build();
     }
