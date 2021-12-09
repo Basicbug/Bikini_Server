@@ -27,4 +27,12 @@ public class UserV2Service {
                 .likeCount(likesRepository.countByUser(user))
                 .build();
     }
+
+    public void updateUserInfo(String uid, User newUser) {
+        User user = userRepository.findByUid(uid)
+            .orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
+
+        user.setUsername(newUser.getUsername());
+        userRepository.save(user);
+    }
 }

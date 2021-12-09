@@ -6,6 +6,7 @@ import static com.basicbug.bikini.config.swagger.SwaggerConstants.FEED;
 import static com.basicbug.bikini.config.swagger.SwaggerConstants.LIKES;
 import static com.basicbug.bikini.config.swagger.SwaggerConstants.USER;
 import static com.basicbug.bikini.config.swagger.SwaggerConstants.VERSION_1;
+import static com.basicbug.bikini.config.swagger.SwaggerConstants.VERSION_2;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,7 @@ public class SwaggerConfiguration {
 
     @Bean
     public Docket userApiDocket() {
-        return createDocket(USER, String.format(GROUP_URL_PATTERN, VERSION_1, USER), VERSION_1);
+        return createDocket(USER, String.format(GROUP_URL_PATTERN, VERSION_2, USER), VERSION_2);
     }
 
     @Bean
