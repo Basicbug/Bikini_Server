@@ -9,4 +9,5 @@ public class SwaggerConstants {
     public static final String LIKES = "likes";
 
     public static final String VERSION_1 = "v1";
+    public static final String VERSION_2 = "v2";
 }
