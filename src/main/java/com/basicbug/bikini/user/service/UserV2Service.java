@@ -32,7 +32,7 @@ public class UserV2Service {
         User user = userRepository.findByUid(uid)
             .orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
 
-        user.setUsername(newUser.getUsername());
+        user.setUsername(newUser.getNickname());
         userRepository.save(user);
     }
 }
