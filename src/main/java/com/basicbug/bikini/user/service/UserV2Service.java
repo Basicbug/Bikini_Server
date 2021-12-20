@@ -28,11 +28,13 @@ public class UserV2Service {
                 .build();
     }
 
-    public void updateUserInfo(String uid, User newUser) {
+    public UserV2Info updateUserInfo(String uid, User newUser) {
         User user = userRepository.findByUid(uid)
             .orElseThrow(() -> new UserNotFoundException("user not found with uid " + uid));
 
         user.setUsername(newUser.getNickname());
         userRepository.save(user);
+
+        return getUserInfo(uid);
     }
 }
