@@ -46,14 +46,16 @@ public class UserV2Controller {
     @ApiOperation(value = "[v2] Update user profile", notes = "사용자 정보 수정")
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<Void> updateUserInfo(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+    public CommonResponse<UserV2ResponseDto> updateUserInfo(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = authentication.getName();
 
         User newUser = userUpdateRequestDto.toUserEntity();
         log.info("update user information with ${}", uid);
 
-        userV2Service.updateUserInfo(uid, newUser);
-        return CommonResponse.empty();
+        return CommonResponse.of(
+            new UserV2ResponseDto(userV2Service.updateUserInfo(uid, newUser)),
+            CommonResponseCode.SUCCESS.getCode()
+        );
     }
 }
